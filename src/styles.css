@@ -59,10 +59,10 @@ body {
 }
 
 .menuImage {
+  position: absolute;
+  left: clamp(50px,50px,1vw);
   height: 60px;
   padding: 1vh 1vh;
-  margin-right: auto;
-  margin-left: clamp(50px, 50px, 4vw);
   filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7492%) hue-rotate(294deg) brightness(97%) contrast(102%);
 
 }
@@ -75,7 +75,6 @@ body {
 .headerTitle {
   font-size: clamp(60px, 60px, 3vw);
   color: white;
-  margin-right: auto;
 }
 
 
@@ -132,9 +131,20 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 70px 50px;
+  padding: 30px 50px;
   gap: 20px;
   width: clamp(470px, 100%, 100%)
+}
+
+.listTitle {
+  background-color: #7D5A50;
+  display: flex;
+  justify-content: center;
+  font-size: 2.5rem;
+  border-radius: 20px;
+  padding: 10px 50px;
+  color: white;
+  box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.349);
 }
 
 .rowContainer {
@@ -146,15 +156,19 @@ body {
   border-radius: 20px;
   padding: 30px 50px;
   color: white;
+  box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.555);
 }
 
 .checkBox {
   margin-right: 0.5vw;
-  margin-top: 0.3vw;
 }
 
 .rowTitle {
   margin-right: auto;
+}
+
+#projectTitle {
+  margin: auto;
 }
 
 .rowTitle:hover {
@@ -176,12 +190,31 @@ body {
   gap: 10px;
 }
 
-.rowImage {
+.rowIcon {
   filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7492%) hue-rotate(294deg) brightness(97%) contrast(102%);
   height: 40px;
 }
 
-.rowImage:hover {
+.rowIcon:hover {
+  cursor: pointer;
+  filter: brightness(0) saturate(100%) invert(42%) sepia(11%) saturate(1152%) hue-rotate(327deg) brightness(85%) contrast(90%);
+}
+
+.trashIcon:hover {
+  filter: brightness(0) saturate(100%) invert(8%) sepia(98%) saturate(7396%) hue-rotate(28deg) brightness(95%) contrast(128%);
+}
+
+.addTaskButton {
+  position: absolute;
+  top: 81vh;
+  right: 5vw;
+  display: flex;
+  height: 110px;
+  z-index: 3;
+  filter: brightness(0) saturate(100%) invert(93%) sepia(29%) saturate(4350%) hue-rotate(299deg) brightness(75%) contrast(82%);
+}
+
+.addTaskButton:hover {
   cursor: pointer;
   filter: brightness(0) saturate(100%) invert(42%) sepia(11%) saturate(1152%) hue-rotate(327deg) brightness(85%) contrast(90%);
 }
