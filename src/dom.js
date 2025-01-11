@@ -49,7 +49,15 @@ export function updateSideBar(projectList) {
         const name = project.getTitle
         editText(item, name)
         addClass(item, "projectNavChild")
-        addId(item, `project${index}`)
+        addId(item, `project-${index}`)
+
+        item.addEventListener("click", () => {
+            const projectIndex = item.getAttribute("id").split("-")[1]
+            const project = projectList[projectIndex]
+            const projectItems = project.getItems
+            updateMainScreen(projectItems, project.getTitle)
+        })
+
         append(projectNavContainer, item)
     })
 
@@ -84,7 +92,14 @@ export function updateMainScreen(list, title) {
     
         //if project list, no other icons & text necessary
         if (title === "Projects") {
-            addId(rowTitle, "projectTitle")
+            addId(rowTitle, `projectTitle-${index}`)
+            addClass(rowTitle, `projectTitle`)
+            rowTitle.addEventListener("click", () => {
+                const projectIndex = rowTitle.getAttribute("id").split("-")[1]
+                const project = projectList[projectIndex]
+                const projectItems = project.getItems
+                updateMainScreen(projectItems, project.getTitle)
+            })
             return
         }
 
