@@ -123,10 +123,10 @@ projectList[0].addItem("English", "1984 Chapter 13", "May 2024", "High", "Not Co
 addProjectToProjectList("Tests")
 projectList[1].addItem("Science Test", "Cell Anatomy", "May 2024", "High", "Not Completed", 1)
 projectList[1].addItem("Statistics Final", "Chapter 1 - 10", "May 2024", "High", "Not Completed", 1)
-console.log(projectList[0].getTitle)
+console.log(projectList)
 
 addItemToInbox("Laundry", "fold clothes", "Jun 2023", "Low", "Not Completed")
-addItemToInbox("Cook", "Lasagna", "May 2023", "Medium", "Not Completed")
+addItemToInbox("Cook", "Lasagna", "May 2023", "Medium", "Completed")
 console.log(inboxList)
 
 addItemToNoteList("Shopping List", "Apples, Grapes, Bananas")
@@ -135,3 +135,4 @@ console.log(noteList)
 
 initialize()
 updateSideBar(projectList)
+updateMainScreen(inboxList)

@@ -1,5 +1,11 @@
-import { select, create, editText, addClass, append, capitalize, insert } from "./domFunctions"
+import { select, create, editText, addClass, append, capitalize, insert, addId } from "./domFunctions"
+import checkedSvg from "./assets/checked.svg"
+import detailsSvg from "./assets/details.svg"
+import editSvg from "./assets/edit.svg"
+import filterSvg from "./assets/filter.svg"
 import menuImageSvg from "./assets/menu.svg"
+import trashSvg from "./assets/trash.svg"
+import uncheckedSvg from "./assets/unchecked.svg"
 
 export function initialize() {
     const header = select("#header")
@@ -20,7 +26,7 @@ export function initialize() {
         "inbox",
         "today",
         "week",
-        "project",
+        "projects",
         "notes",
     ]
 
@@ -45,11 +51,47 @@ export function updateSideBar(projectList) {
         const name = project.getTitle
         editText(item, name)
         addClass(item, "projectNavChild")
+        addId(item, `project${index}`)
         append(projectNavContainer, item)
     })
 
 }
 
-export function updateMainScreen(page) {
+export function updateMainScreen(list) {
+    const mainScreen = select("#mainScreen")
+    mainScreen.innerHTML = ""
 
+    list.forEach((item) => {
+        const rowContainer = create("div")
+        addClass(rowContainer, "rowContainer")
+        append(mainScreen, rowContainer)
+
+        const checkBox = create("img")
+        addClass(checkBox, "checkBox")
+        addClass(checkBox, "rowImage")
+        checkBox.src = item.getCompletedStatus === "Completed" ? checkedSvg : uncheckedSvg
+        append(rowContainer, checkBox)
+
+        const rowTitle = create("div")
+        editText(rowTitle, `${item.getTitle}`)
+        addClass(rowTitle, "rowTitle")
+        append(rowContainer, rowTitle)
+
+        const rowDueDate = create("div")
+        editText(rowDueDate, `${item.getDueDate}`)
+        addClass(rowDueDate, "rowDueDate")
+        append(rowContainer, rowDueDate)
+
+        const iconList = create("div")
+        addClass(iconList, "iconList")
+        append(rowContainer, iconList)
+
+        const images = [detailsSvg, editSvg, trashSvg]
+        images.forEach((image) => {
+            const imageContainer = create("img")
+            addClass(imageContainer, "rowImage")
+            imageContainer.src = image
+            append(iconList, imageContainer)
+        })
+    })
 }

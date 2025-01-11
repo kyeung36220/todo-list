@@ -38,7 +38,8 @@ h1, h2, h3, h4, h5, h6 {
 
 body {
     font-family: "Fredoka";
-    height: 100vh;
+    height: clamp(474px, 100vh, 100vh);
+    width: clamp(952px, 100vw, 100vw);
     display: grid;
     grid-template-rows: 1fr 6fr;
     grid-template-columns: 1fr 4fr;
@@ -49,7 +50,7 @@ body {
 
 #header {
   grid-area: header;
-  background-color: #8fc0a9;
+  background-color: #7D5A50;
   z-index: 2;
   display: flex;
   align-items: center;
@@ -59,15 +60,16 @@ body {
 
 .menuImage {
   height: 60px;
-  padding-top: 1vh;
+  padding: 1vh 1vh;
   margin-right: auto;
   margin-left: clamp(50px, 50px, 4vw);
   filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7492%) hue-rotate(294deg) brightness(97%) contrast(102%);
+
 }
 
 .menuImage:hover {
   cursor: pointer;
-  filter: brightness(0) saturate(100%) invert(17%) sepia(39%) saturate(1794%) hue-rotate(118deg) brightness(97%) contrast(99%);
+  filter: brightness(0) saturate(100%) invert(97%) sepia(80%) saturate(983%) hue-rotate(297deg) brightness(102%) contrast(116%);
 }
 
 .headerTitle {
@@ -79,48 +81,107 @@ body {
 
 .headerTitle:hover {
   cursor: pointer;
-  color: #014226;
+  color: #FCDEC0;
 }
 
 #sideBar {
   grid-area: sideBar;
-  background-color: #c8d5b9;
+  background-color: #B4846C;
   box-shadow: -5px 0px 10px rgb(0, 0, 0);
   z-index: 1;
   display: flex;
   flex-direction: column;
   padding: clamp(35px, 35px, 4vh) clamp(10px,10px,1vw) 0px clamp(10px,10px,1vw);
   gap: 0.5vh;
+  color: white;
 }
 
 .sideBarChild {
   font-size: 2rem;
   padding-left: clamp(50px, 50px, 4vw);
+  padding-right: clamp(50px, 50px, 4vw);
   border-radius: 5px;
 }
 
 .sideBarChild:hover {
   color: #faf3dd;
-  background-color: #014226;
+  background-color: #7D5A50;
   cursor: pointer;
 }
 
 .projectNavContainer:hover {
-  color: black;
-  background-color: #c8d5b9;
+  color: white;
+  background-color: #B4846C;
 }
 
 .projectNavChild {
   font-size: 1.5rem;
   padding-left: clamp(20px, 20px, 1.5vw);
+  padding-right: clamp(20px, 20px, 1.5vw);
   border-radius: 5px;
 }
 
 .projectNavChild:hover {
   color: #faf3dd;
-  background-color: #014226;
+  background-color: #7D5A50;
 }
+
 #mainScreen {
   grid-area: mainScreen;
-  background-color: #faf3dd;
+  background-color: #FCDEC0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 70px 50px;
+  gap: 20px;
+  width: clamp(470px, 100%, 100%)
+}
+
+.rowContainer {
+  background-color: #B4846C;
+  display: flex;
+  align-items: center;
+  font-size: 2.5rem;
+  width: clamp(467px, 100%, 100%);
+  border-radius: 20px;
+  padding: 30px 50px;
+  color: white;
+}
+
+.checkBox {
+  margin-right: 0.5vw;
+  margin-top: 0.3vw;
+}
+
+.rowTitle {
+  margin-right: auto;
+}
+
+.rowTitle:hover {
+  cursor: pointer;
+  filter: brightness(0) saturate(100%) invert(42%) sepia(11%) saturate(1152%) hue-rotate(327deg) brightness(85%) contrast(90%);
+}
+
+.rowDueDate {
+  margin-left: auto;
+  margin-right: 50px;
+  font-size: 1rem;
+  border: 4px solid rgb(255, 255, 255);
+  border-radius: 15px;
+  padding: 15px;
+}
+
+.iconList {
+  display: flex;
+  gap: 10px;
+}
+
+.rowImage {
+  filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7492%) hue-rotate(294deg) brightness(97%) contrast(102%);
+  height: 40px;
+}
+
+.rowImage:hover {
+  cursor: pointer;
+  filter: brightness(0) saturate(100%) invert(42%) sepia(11%) saturate(1152%) hue-rotate(327deg) brightness(85%) contrast(90%);
 }

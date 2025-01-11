@@ -25,3 +25,7 @@ export function capitalize(val) {
 export function insert(parent, item, beforeWhatIndex) {
     parent.insertBefore(item, parent.children[beforeWhatIndex])
 }
+
+export function addId(item, idName) {
+    item.id = idName
+}
