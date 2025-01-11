@@ -5,7 +5,6 @@ export const inboxList = []
 export const todayTasksList = []
 export const weekTasksList = []
 export const projectList = []
-export const noteList = []
 
 class Item {
     constructor(title, description, dueDate, priority, completedStatus, index) {
@@ -66,26 +65,6 @@ class Project {
     }
 }
 
-class Note {
-    constructor(title, description, index) {
-        this.title = title
-        this.description = description
-        this.index = index
-    }
-
-    get getTitle() {
-        return this.title
-    }
-
-    get getDescription() {
-        return this.description
-    }
-
-    get getIndex() {
-        return this.index
-    }
-}
-
 function addItemToInbox(title, description, dueDate, priority, completedStatus) {
     const item = new Item(title, description, dueDate, priority, completedStatus, getInboxListLength())
     inboxList.push(item)
@@ -108,15 +87,6 @@ function getProjectItemListLength(index) {
     return projectList[index].getItems.length
 }
 
-function addItemToNoteList(title, description) {
-    const note = new Note(title, description, getNoteListLength())
-    noteList.push(note)
-}
-
-function getNoteListLength() {
-    return noteList.length
-}
-
 addProjectToProjectList("Homework")
 projectList[0].addItem("Math", "Chapter 3 Module 4", "May 2024", "High", "Not Completed", 0)
 projectList[0].addItem("English", "1984 Chapter 13", "Apr 2024", "High", "Not Completed", 0)
@@ -126,9 +96,6 @@ projectList[1].addItem("Statistics Final", "Chapter 1 - 10", "May 2024", "High",
 
 addItemToInbox("Laundry", "fold clothes", "Jun 2023", "Low", "Not Completed")
 addItemToInbox("Cook", "Lasagna", "May 2023", "Medium", "Completed")
-
-addItemToNoteList("Shopping List", "Apples, Grapes, Bananas")
-addItemToNoteList("Gym Routine", "Push-ups, Pull-ups")
 
 initialize()
 updateMainScreen(inboxList, "Inbox")

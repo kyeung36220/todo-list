@@ -5,9 +5,11 @@ import detailsSvg from "./assets/details.svg"
 import editSvg from "./assets/edit.svg"
 import filterdescSvg from "./assets/filterdesc.svg"
 import menuImageSvg from "./assets/menu.svg"
-import plusSvg from "./assets/plus.svg"
+import plusOnlySvg from "./assets/plusOnly.svg"
+import plusWithCircleSvg from "./assets/plusWithCircle.svg"
 import trashSvg from "./assets/trash.svg"
 import uncheckedSvg from "./assets/unchecked.svg"
+import exitButtonSvg from "./assets/x.svg"
 
 export function initialize() {
     const body = select("body")
@@ -70,8 +72,10 @@ export function updateMainScreen(list, title) {
     // add plus button
     const addTaskButton = create("img")
     addClass(addTaskButton, "addTaskButton")
-    addTaskButton.src = plusSvg
+    addTaskButton.src = plusWithCircleSvg
     insert(mainScreen, addTaskButton)
+
+    addTaskButton.addEventListener("click", addProjectWindow)
 
     const listTitle = create("div")
     addClass(listTitle, "listTitle")
@@ -100,6 +104,7 @@ export function updateMainScreen(list, title) {
                 const projectItems = project.getItems
                 updateMainScreen(projectItems, project.getTitle)
             })
+            createIcons(rowContainer, `projects`)
             return
         }
 
@@ -121,29 +126,7 @@ export function updateMainScreen(list, title) {
         })
 
         //icons
-        const iconList = create("div")
-        addClass(iconList, "iconList")
-        append(rowContainer, iconList)
-
-        const details = create("img")
-        addClass(details, `rowIcon`)
-        addClass(details, `detailsIcon`)
-        details.src = detailsSvg
-        append(iconList, details)
-
-        const edit = create("img")
-        addClass(edit, `rowIcon`)
-        addClass(edit, `editIcon`)
-        edit.src = editSvg
-        append(iconList, edit)
-
-        const trash = create("img")
-        addClass(trash, `rowIcon`)
-        addClass(trash, `trashIcon`)
-        trash.src = trashSvg
-        append(iconList, trash)
-
-
+        createIcons(rowContainer, `normal`, item)
     })
 }
 
@@ -173,12 +156,6 @@ function addSideBarButtonFunctionality() {
         updateMainScreen(projectList, "Projects")
         return
     })
-
-    const notesButton = document.querySelector(".notesNav")
-    notesButton.addEventListener("click", () => {
-        //will add more later
-        return
-    })
 }
 
 function addSideBar() {
@@ -187,8 +164,6 @@ function addSideBar() {
         "inbox",
         "today",
         "week",
-        "projects",
-        "notes",
     ]
 
     sideBarLabels.forEach((text) => {
@@ -199,11 +174,116 @@ function addSideBar() {
         append(sideBar, item)
     })
 
+    const projectTitleContainer = create("div")
+    addId(projectTitleContainer, "projectTitleContainer")
+    append(sideBar, projectTitleContainer)
+
+    const projectTitle = create("div")
+    editText(projectTitle, "Projects")
+    addClass(projectTitle, `projectsNav`)
+    append(projectTitleContainer, projectTitle)
+
+    const projectAddButton = create("img")
+    addClass(projectAddButton, "projectAddButton")
+    projectAddButton.src = plusOnlySvg
+    append(projectTitleContainer, projectAddButton)
+
     const projectNavContainer = create("div")
     addClass(projectNavContainer, "projectNavContainer")
     addClass(projectNavContainer, `sideBarChild`)
-    insert(sideBar, projectNavContainer, 4)
+    append(sideBar, projectNavContainer)
     updateSideBar(projectList)
 
     addSideBarButtonFunctionality()
+}
+
+function createIcons(parent, page, item) {
+    const iconList = create("div")
+    addClass(iconList, "iconList")
+    append(parent, iconList)
+
+    if (page === "normal") {
+        const details = create("img")
+        addClass(details, `rowIcon`)
+        addClass(details, `detailsIcon`)
+        details.src = detailsSvg
+        append(iconList, details)
+
+        details.addEventListener("click", () => {
+            seeDetails(item)
+        })
+
+        const edit = create("img")
+        addClass(edit, `rowIcon`)
+        addClass(edit, `editIcon`)
+        edit.src = editSvg
+        append(iconList, edit)
+
+    }
+
+    const trash = create("img")
+    addClass(trash, `rowIcon`)
+    addClass(trash, `trashIcon`)
+    trash.src = trashSvg
+    append(iconList, trash)
+}
+
+function seeDetails(item) {
+    const body = document.querySelector("body")
+
+    const detailsWindow = document.createElement("div")
+    addClass(detailsWindow, "detailsWindow")
+    addClass(detailsWindow, "window")
+    append(body, detailsWindow)
+
+    const existingDetailsWindow = document.querySelector(".detailsWindow")
+    if (existingDetailsWindow.innerHTML != "") {
+        detailsWindow.remove()
+        return
+    }
+
+    const textContainer = document.createElement("div")
+    addClass(textContainer, `detailsTextContainer`)
+    append(detailsWindow, textContainer)
+
+    const exitButton = document.createElement("img")
+    addClass(exitButton, `exitButton`)
+    exitButton.src = exitButtonSvg
+    exitButton.addEventListener("click", () => {detailsWindow.remove()})
+    append(detailsWindow, exitButton)
+
+    const titleText = document.createElement("div")
+    addClass(titleText, "titleText")
+    addClass(titleText, `detailsWindowText`)
+    editText(titleText, item.getTitle)
+    append(textContainer, titleText)
+
+    const descText = document.createElement("div")
+    addClass(descText, "descText")
+    addClass(descText, `detailsWindowText`)
+    editText(descText, `Description: ${item.getDescription}`)
+    append(textContainer, descText)
+
+    const dueDateText = document.createElement("div")
+    addClass(dueDateText, "dueDateText")
+    addClass(dueDateText, `detailsWindowText`)
+    editText(dueDateText, `Due Date: ${item.getDueDate}`)
+    append(textContainer, dueDateText)
+
+    const priorityText = document.createElement("div")
+    addClass(priorityText, "priorityText")
+    addClass(priorityText, `detailsWindowText`)
+    editText(priorityText, `Priority: ${item.getPriority}`)
+    append(textContainer, priorityText)
+
+    const completedStatusText = document.createElement("div")
+    addClass(completedStatusText, "completedStatusText")
+    addClass(completedStatusText, `detailsWindowText`)
+    editText(completedStatusText, `Completed Status: ${item.getCompletedStatus}`)
+    append(textContainer, completedStatusText)
+
+}
+
+function addProjectWindow() {
+    
 }

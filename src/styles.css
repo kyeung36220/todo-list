@@ -48,6 +48,8 @@ body {
     "sideBar mainScreen";
   }
 
+
+/* HEADER */
 #header {
   grid-area: header;
   background-color: #7D5A50;
@@ -83,6 +85,7 @@ body {
   color: #FCDEC0;
 }
 
+/* SIDEBAR */
 #sideBar {
   grid-area: sideBar;
   background-color: #B4846C;
@@ -108,6 +111,33 @@ body {
   cursor: pointer;
 }
 
+#projectTitleContainer {
+  display: flex;
+  align-items: center;
+  font-size: 2rem;
+  padding-left: clamp(50px, 50px, 4vw);
+  padding-right: clamp(10px, 10px, 2vw);
+  border-radius: 5px;
+}
+
+#projectTitleContainer:hover {
+  background-color: #7D5A50;
+}
+
+.projectsNav:hover {
+  cursor: pointer;
+}
+
+.projectAddButton {
+  margin-left: auto;
+  height: 20px;
+  filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(49deg) brightness(103%) contrast(103%);
+}
+
+.projectAddButton:hover {
+  cursor: pointer;
+}
+
 .projectNavContainer:hover {
   color: white;
   background-color: #B4846C;
@@ -125,6 +155,7 @@ body {
   background-color: #7D5A50;
 }
 
+/* MAIN SCREEN */
 #mainScreen {
   grid-area: mainScreen;
   background-color: #FCDEC0;
@@ -217,4 +248,54 @@ body {
 .addTaskButton:hover {
   cursor: pointer;
   filter: brightness(0) saturate(100%) invert(42%) sepia(11%) saturate(1152%) hue-rotate(327deg) brightness(85%) contrast(90%);
+}
+
+.window {
+  position: absolute;
+  background-color: #B4846C;
+  color: white;
+  font-size: 3rem;
+  width: 70vw;
+  height: 70vh;
+  margin: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  border: 5px solid #7D5A50;
+  border-radius: 50px;
+  padding: 40px 50px;
+  z-index: 5;
+}
+
+.detailsWindow {
+  display: grid;
+  grid-template-rows: 1fr 20fr;
+  grid-template-areas: 
+  "exitButton"
+  "textContent";
+}
+
+.exitButton {
+  grid-area: exitButton;
+  height: 30px;
+  margin-left: auto;
+  filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(259deg) brightness(106%) contrast(106%);
+}
+
+.exitButton:hover {
+  cursor: pointer;
+  filter: brightness(0) saturate(100%) invert(96%) sepia(65%) saturate(669%) hue-rotate(303deg) brightness(101%) contrast(98%);}
+
+.detailsTextContainer .titleText {
+  text-align: center;
+  font-size: 4rem;
+}
+
+.detailsTextContainer .descText {
+  margin-top: 5vh;
+}
+
+.detailsTextContainer .completedStatusText {
+  margin-bottom: 3vh;
 }
