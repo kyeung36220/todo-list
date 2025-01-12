@@ -279,7 +279,6 @@ body {
   height: 40px;
   width: 40px;
 }
-
 .rowIcon:hover {
   cursor: pointer;
   filter: brightness(0) saturate(100%) invert(42%) sepia(11%) saturate(1152%) hue-rotate(327deg) brightness(85%) contrast(90%);
@@ -459,6 +458,14 @@ dialog:focus {
 }
 
 .addButton:hover {
+  background-color: rgb(82, 233, 82);
+}
+
+.editButton {
+  background-color: rgb(1, 170, 1);
+}
+
+.editButton:hover {
   background-color: rgb(82, 233, 82);
 }
 

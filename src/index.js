@@ -42,6 +42,22 @@ class Item {
     get getIndex() {
         return this.index
     }
+
+    set changeTitle(newTitle) {
+        this.title = newTitle
+    }
+
+    set changeDescription(newDescription) {
+        this.description = newDescription
+    }
+
+    set changeDueDate(newDueDate) {
+        this.dueDate = newDueDate
+    }
+
+    set changePriority(newPriority) {
+        this.priority = newPriority
+    }
 }
 
 class Project {
@@ -63,8 +79,8 @@ class Project {
         return this.index
     }
 
-    addItem(title, description, dueDate, priority, completedStatus, listNumber) {
-        let item = new Item(title, description, dueDate, priority, completedStatus, getProjectItemListLength(listNumber))
+    addItem(title, description, dueDate, priority, completedStatus, listIndex) {
+        let item = new Item(title, description, dueDate, priority, completedStatus, getProjectItemListLength(listIndex))
         this.itemList.push(item)
     }
 }
@@ -92,14 +108,14 @@ function getProjectItemListLength(index) {
 }
 
 addProjectToProjectList("Homework")
-projectList[0].addItem("Math", "Chapter 3 Module 4", "May 2024", "High", "Not Completed", 0)
-projectList[0].addItem("English", "1984 Chapter 13", "Apr 2024", "High", "Not Completed", 0)
+projectList[0].addItem("Math", "Chapter 3 Module 4", "2024-05-03", "High", "Not Completed", 0)
+projectList[0].addItem("English", "1984 Chapter 13", "2024-04-15", "High", "Not Completed", 0)
 addProjectToProjectList("Tests")
-projectList[1].addItem("Science Test", "Cell Anatomy", "Sep 2024", "High", "Not Completed", 1)
-projectList[1].addItem("Statistics Final", "Chapter 1 - 10", "May 2024", "High", "Not Completed", 1)
+projectList[1].addItem("Science Test", "Cell Anatomy", "2024-09-16", "High", "Not Completed", 1)
+projectList[1].addItem("Statistics Final", "Chapter 1 - 10", "2024-5-30", "High", "Not Completed", 1)
 
-addItemToInbox("Laundry", "fold clothes", "Jun 2023", "Low", "Not Completed")
-addItemToInbox("Cook", "Lasagna", "May 2023", "Medium", "Completed")
+addItemToInbox("Laundry", "fold clothes", "2023-06-17", "Low", "Not Completed")
+addItemToInbox("Cook", "Lasagna", "2023-05-03", "Medium", "Completed")
 
 initialize()
 updateMainScreen(inboxList, "Inbox")

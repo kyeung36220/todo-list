@@ -33,3 +33,10 @@ export function insert(parent, item, beforeWhatIndex) {
 export function addId(item, idName) {
     item.id = idName
 }
+
+export function getId (item) {
+    return item.id
+}
+export function editValue(item, value) {
+    item.value = value
+}

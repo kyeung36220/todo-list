@@ -1,4 +1,4 @@
-import { select, create, editText, addClass, removeClass, append, capitalize, insert, addId } from "./domFunctions"
+import { select, create, editText, addClass, removeClass, append, capitalize, insert, addId, editValue, getId } from "./domFunctions"
 import { inboxList, todayTasksList, weekTasksList, projectList, noteList, addItemToInbox, addProjectToProjectList } from "./index.js"
 import checkedSvg from "./assets/checked.svg"
 import detailsSvg from "./assets/details.svg"
@@ -11,6 +11,8 @@ import trashSvg from "./assets/trash.svg"
 import uncheckedSvg from "./assets/unchecked.svg"
 import exitButtonSvg from "./assets/x.svg"
 import checkmarkSvg from "./assets/checkmark.svg"
+
+let currentPage = "Inbox"
 
 export function initialize() {
     const body = select("body")
@@ -59,6 +61,7 @@ export function updateSideBar(projectList) {
             const projectIndex = item.getAttribute("id").split("-")[1]
             const project = projectList[projectIndex]
             const projectItems = project.getItems
+            currentPage = project.getTitle
             updateMainScreen(projectItems, project.getTitle)
         })
 
@@ -79,6 +82,9 @@ export function updateMainScreen(list, title) {
 
     addTaskButton.addEventListener("click", addTaskWindow)
 
+    let projectIndex = findProject(currentPage).getIndex
+
+
     const listTitle = create("div")
     addClass(listTitle, "listTitle")
     editText(listTitle, title)
@@ -87,7 +93,7 @@ export function updateMainScreen(list, title) {
     list.forEach((item, index) => {
         const rowContainer = create("div")
         addClass(rowContainer, "rowContainer")
-        addId(rowContainer, `rowIndex-${index}`)
+        addId(rowContainer, `project-${projectIndex}-itemIndex-${index}`)
         append(mainScreen, rowContainer)
     
         //text
@@ -101,7 +107,7 @@ export function updateMainScreen(list, title) {
             addId(rowTitle, `projectTitle-${index}`)
             addClass(rowTitle, `projectTitle`)
             rowTitle.addEventListener("click", () => {
-                const projectIndex = rowTitle.getAttribute("id").split("-")[1]
+                const projectIndex = getId(rowTitle).split("-")[3]
                 const project = projectList[projectIndex]
                 const projectItems = project.getItems
                 updateMainScreen(projectItems, project.getTitle)
@@ -138,34 +144,38 @@ export function updateMainScreen(list, title) {
 
 function addSideBarButtonFunctionality() {
 
-    const inboxButton = document.querySelector(".inboxNav")
+    const inboxButton = select(".inboxNav")
     inboxButton.addEventListener("click", () => {
-        updateMainScreen(inboxList, "Inbox")
+        currentPage = "Inbox"
+        updateMainScreen(inboxList, currentPage)
         return
     })
 
-    const todayButton = document.querySelector(".todayNav")
+    const todayButton = select(".todayNav")
     todayButton.addEventListener("click", () => {
-        updateMainScreen(todayTasksList, "Today")
+        currentPage = "Today"
+        updateMainScreen(todayTasksList, currentPage)
         return
     })
 
 
-    const weekButton = document.querySelector(".weekNav")
+    const weekButton = select(".weekNav")
     weekButton.addEventListener("click", () => {
-        updateMainScreen(weekTasksList, "Week")
+        currentPage = "Week"
+        updateMainScreen(weekTasksList, currentPage)
         return
     })
 
-    const projectsButton = document.querySelector(".projectsNav")
+    const projectsButton = select(".projectsNav")
     projectsButton.addEventListener("click", () => {
-        updateMainScreen(projectList, "Projects")
+        currentPage = "Projects"
+        updateMainScreen(projectList, currentPage)
         return
     })
 }
 
 function addSideBar() {
-    const sideBar = document.querySelector("#sideBar")
+    const sideBar = select("#sideBar")
     const sideBarLabels = [
         "inbox",
         "today",
@@ -229,6 +239,10 @@ function createIcons(parent, title, item, list) {
         edit.src = editSvg
         append(iconList, edit)
 
+        edit.addEventListener("click", (e) => {
+            editTask(e, item)
+        })
+
     }
 
     const trash = create("img")
@@ -247,15 +261,15 @@ function createIcons(parent, title, item, list) {
 }
 
 function seeDetails(item) {
-    const body = document.querySelector("body")
+    const body = select("body")
 
-    const detailsWindow = document.createElement("dialog")
+    const detailsWindow = create("dialog")
     addClass(detailsWindow, "detailsWindow")
     addClass(detailsWindow, "window")
     append(body, detailsWindow)
     detailsWindow.showModal()
 
-    const exitButton = document.createElement("img")
+    const exitButton = create("img")
     addClass(exitButton, `exitButton`)
     exitButton.src = exitButtonSvg
     exitButton.addEventListener("click", () => {
@@ -263,35 +277,35 @@ function seeDetails(item) {
     })
     append(detailsWindow, exitButton)
 
-    const textContainer = document.createElement("div")
+    const textContainer = create("div")
     addClass(textContainer, `detailsTextContainer`)
     append(detailsWindow, textContainer)
 
-    const titleText = document.createElement("div")
+    const titleText = create("div")
     addClass(titleText, "titleText")
     addClass(titleText, `detailsWindowText`)
     editText(titleText, item.getTitle)
     append(textContainer, titleText)
 
-    const dueDateText = document.createElement("div")
+    const dueDateText = create("div")
     addClass(dueDateText, "dueDateText")
     addClass(dueDateText, `detailsWindowText`)
     editText(dueDateText, `Due Date: ${item.getDueDate}`)
     append(textContainer, dueDateText)
 
-    const priorityText = document.createElement("div")
+    const priorityText = create("div")
     addClass(priorityText, "priorityText")
     addClass(priorityText, `detailsWindowText`)
     editText(priorityText, `Priority: ${item.getPriority}`)
     append(textContainer, priorityText)
 
-    const completedStatusText = document.createElement("div")
+    const completedStatusText = create("div")
     addClass(completedStatusText, "completedStatusText")
     addClass(completedStatusText, `detailsWindowText`)
     editText(completedStatusText, `Completed Status: ${item.getCompletedStatus}`)
     append(textContainer, completedStatusText)
 
-    const descText = document.createElement("div")
+    const descText = create("div")
     addClass(descText, "descText")
     addClass(descText, `detailsWindowText`)
     editText(descText, `Description: ${item.getDescription}`)
@@ -299,59 +313,136 @@ function seeDetails(item) {
 
 }
 
+function editTask(e, item) {
+    addTaskWindow()
+    const itemIndex = getId(e.target.parentElement.parentElement).split("-")[1]
+    const window = select(".window")
+    const titleText = select(".titleText")
+    const inputTaskName = select(".inputTaskName")
+    const inputDesc = select(".inputTaskDesc")
+    const inputDueDate = select(".inputDueDate")
+    const priorityList = select(".priorityList")
+    const categoryList = select(".categoryList")
+    const originalAddButton = select(".addButton")
+    const buttonContainer = select(".buttonContainer")
+
+    editText(titleText, "Edit Task")
+    editValue(inputTaskName, item.getTitle)
+    editValue(inputDesc, item.getDescription)
+    editValue(inputDueDate, item.getDueDate)
+
+    for (let option of priorityList.options) {
+        if (option.value === item.getPriority) {
+            option.selected = true
+            break
+        }
+    }
+
+    const project = findProject(currentPage)
+    const projectIndex = project.getIndex
+    for (let option of categoryList.options) {
+        if (option.value.split("-")[1] == projectIndex) {
+            option.selected = true
+            break
+        }
+    }
+
+    originalAddButton.remove()
+    const editButton = create("div")
+    addClass(editButton, "editButton")
+    addClass(editButton, "button")
+    editText(editButton, "Edit Task")
+    insert(buttonContainer, editButton, 0)
+
+    editButton.addEventListener("click", () => {
+        item.changeTitle = inputTaskName.value
+        item.changeDescription = inputDesc.value
+        item.changeDueDate = inputDueDate.value
+        item.changePriority = priorityList.value
+
+        if (categoryList.value != currentPage) {
+            if (currentPage === "Inbox") {
+                inboxList.splice(itemIndex, 1)
+            }
+            else {
+                projectList[projectIndex].getItems.splice(itemIndex, 1)
+            }
+            if (categoryList.value === "Inbox") {
+                inboxList.push(item)
+            }
+            else {
+                const newProject = findProject(categoryList.value.split("-")[2])
+                newProject.addItem(item.getTitle, item.getDescription, item.getDueDate, item.getPriority, "Not Completed", newProject.getIndex)
+            }
+        }
+
+        if (currentPage === "Inbox"){
+            updateMainScreen(inboxList, "Inbox")
+        }
+        else {
+            updateMainScreen(project.getItems, project.getTitle)
+        }
+        window.remove()
+        
+    })
+    
+}
+
 function addTaskWindow() {
 
-    const body = document.querySelector("body")
-    const window = document.createElement("dialog")
+    const body = select("body")
+    const window = create("dialog")
     addClass(window, "addTaskWindow")
     addClass(window, "window")
     append(body, window)
     window.showModal()
 
-    const exitButton = document.createElement("div")
+    const exitButton = create("div")
     addClass(exitButton, `exitButton`)
     append(window, exitButton)
 
-    const formContainer = document.createElement("form")
+    const formContainer = create("form")
     addClass(formContainer, `addTaskFormContainer`)
     append(window, formContainer)
 
-    const titleText = document.createElement("div")
+    const titleText = create("div")
     addClass(titleText, "titleText")
     editText(titleText, "Add Task")
     append(formContainer, titleText)
 
     // task title
-    const inputRowContainer = document.createElement("div")
+    const inputRowContainer = create("div")
     addClass(inputRowContainer, "inputRowContainer")
     append(formContainer, inputRowContainer)
 
-    const inputTaskLabel = document.createElement("span")
+    const inputTaskLabel = create("span")
     addClass(inputTaskLabel, "inputTaskLabel")
     addClass(inputTaskLabel, "label")
     editText(inputTaskLabel, "Task Name:")
     append(inputRowContainer, inputTaskLabel)
 
-    const inputTaskName = document.createElement('input')
+    const inputTaskName = create('input')
     addClass(inputTaskName, "input")
+    addClass(inputTaskName, "inputTaskName")
     inputTaskName.type = 'text'
     inputTaskName.name = 'taskName'
     inputTaskName.placeholder = 'Task Name'
     append(inputRowContainer, inputTaskName)
 
     // description
-    const inputRowContainer2 = document.createElement("div")
+    const inputRowContainer2 = create("div")
     addClass(inputRowContainer2, "inputRowContainer")
     append(formContainer, inputRowContainer2)
 
-    const inputDescLabel = document.createElement("span")
+    const inputDescLabel = create("span")
     addClass(inputDescLabel, "inputDescLabel")
     addClass(inputDescLabel, "label")
     editText(inputDescLabel, "Task Description:")
     append(inputRowContainer2, inputDescLabel)
 
-    const inputDesc = document.createElement('textarea')
+    const inputDesc = create('textarea')
     addClass(inputDesc, "textArea")
+    addClass(inputDesc, "inputTaskDesc")
     inputDesc.name = 'taskDesc'
     inputDesc.placeholder = 'Task Description'
     inputDesc.rows ="3"
@@ -359,94 +450,95 @@ function addTaskWindow() {
     append(inputRowContainer2, inputDesc)
 
     // due date
-    const inputRowContainer3 = document.createElement("div")
+    const inputRowContainer3 = create("div")
     addClass(inputRowContainer3, "inputRowContainer")
     append(formContainer, inputRowContainer3)
 
-    const inputDueDateLabel = document.createElement("span")
+    const inputDueDateLabel = create("span")
     addClass(inputDueDateLabel, "inputDueDateLabel")
     addClass(inputDueDateLabel, "label")
     editText(inputDueDateLabel, "Task Due Date:")
     append(inputRowContainer3, inputDueDateLabel)
 
-    const inputDueDate = document.createElement('input')
+    const inputDueDate = create('input')
     addClass(inputDueDate, "input")
+    addClass(inputDueDate, "inputDueDate")
     inputDueDate.type = 'date'
     inputDueDate.name = 'taskDueDate'
     inputDueDate.placeholder = 'Due Date'
     append(inputRowContainer3, inputDueDate)
 
     // priority dropdown
-    const inputPriority = document.createElement('div');
+    const inputPriority = create('div');
     addClass(inputPriority, "inputPriority")
     append(formContainer, inputPriority)
 
-    const inputPriorityLabel = document.createElement("span")
+    const inputPriorityLabel = create("span")
     addClass(inputPriorityLabel, "inputPriorityLabel")
     editText(inputPriorityLabel, "Priority:")
     append(inputPriority, inputPriorityLabel)
 
-    const priorityList = document.createElement("select")
+    const priorityList = create("select")
     addClass(priorityList, "priorityList")
     addClass(priorityList, "list")
     priorityList.name = "Priority"
     append(inputPriority, priorityList)
 
-    const priorityLow = document.createElement("option")
-    priorityLow.value = "Low"
+    const priorityLow = create("option")
+    editValue(priorityLow, "Low")
     editText(priorityLow, "Low")
     append(priorityList, priorityLow)
 
-    const priorityMed = document.createElement("option")
-    priorityMed.value = "Medium"
+    const priorityMed = create("option")
+    editValue(priorityMed, "Medium")
     editText(priorityMed, "Medium")
     append(priorityList, priorityMed)
 
-    const priorityHigh = document.createElement("option")
-    priorityHigh.value = "High"
+    const priorityHigh = create("option")
+    editValue(priorityHigh, "High")
     editText(priorityHigh, "High")
     append(priorityList, priorityHigh)
 
     // category dropdown
-    const inputCategory = document.createElement('div');
+    const inputCategory = create('div');
     addClass(inputCategory, "inputCategory")
     append(formContainer, inputCategory)
 
-    const inputCategoryLabel = document.createElement("span")
+    const inputCategoryLabel = create("span")
     addClass(inputCategoryLabel, "inputCategoryLabel")
     editText(inputCategoryLabel, "Category:")
     append(inputCategory, inputCategoryLabel)
 
-    const categoryList = document.createElement("select")
+    const categoryList = create("select")
     addClass(categoryList, "categoryList")
     addClass(categoryList, "list")
     categoryList.name = "Category"
     append(inputCategory, categoryList)
 
-    const inbox = document.createElement("option")
-    inbox.value = "inbox"
+    const inbox = create("option")
+    editValue(inbox, "Inbox")
     editText(inbox, "Inbox")
     append(categoryList, inbox)
 
     projectList.forEach((project) => {
-        const choice = document.createElement("option")
-        choice.value = `projectIndex-${project.getIndex}`
+        const choice = create("option")
+        editValue(choice, `projectIndex-${project.getIndex}-${project.getTitle}`)
         editText(choice, `${project.getTitle}`)
         append(categoryList, choice)
     })
 
     // Add and Cancel Button
-    const buttonContainer = document.createElement("div")
+    const buttonContainer = create("div")
     addClass(buttonContainer, "buttonContainer")
     append(formContainer, buttonContainer)
 
-    const addButton = document.createElement("div")
+    const addButton = create("div")
     addClass(addButton, "addButton")
     addClass(addButton, "button")
     editText(addButton, "Add Task")
     append(buttonContainer, addButton)
 
-    addButton.addEventListener("click", () => {
+    addButton.addEventListener("click", function addItem() {
 
         const name = inputTaskName.value
         const description = inputDesc.value
@@ -454,7 +546,7 @@ function addTaskWindow() {
         const priority = priorityList.value
         const category = categoryList.value
 
-        const asterisk = document.createElement("span")
+        const asterisk = create("span")
         editText(asterisk, "*")
 
         if (name === "") {
@@ -500,7 +592,7 @@ function addTaskWindow() {
         }
     })
 
-    const cancelButton = document.createElement("div")
+    const cancelButton = create("div")
     addClass(cancelButton, "cancelButton")
     addClass(cancelButton, "button")
     editText(cancelButton, "Cancel")
@@ -512,18 +604,18 @@ function addTaskWindow() {
 }
 
 function addProjectAddButtonFunctionality() {
-    const sideBar = document.querySelector("#sideBar")
+    const sideBar = select("#sideBar")
 
-    const inputContainer = document.createElement("div")
+    const inputContainer = create("div")
     addClass(inputContainer, "projectNavChild")
     addId(inputContainer, "projectNavInputContainer")
     append(sideBar, inputContainer)
 
-    const nameInput = document.createElement("input")
+    const nameInput = create("input")
     addClass(nameInput, `nameInput`)
     append(inputContainer, nameInput)
 
-    const checkmark = document.createElement("img")
+    const checkmark = create("img")
     addClass(checkmark, `checkmark`)
     checkmark.src = checkmarkSvg
     append(inputContainer, checkmark)
@@ -539,11 +631,26 @@ function addProjectAddButtonFunctionality() {
         inputContainer.remove()
         updateSideBar(projectList)
 
-        const currentPage = document.querySelector(".listTitle")
-        console.log(currentPage.textContent)
-        if (currentPage.textContent === "Projects") {
+        if (currentPage === "Projects") {
             updateMainScreen(projectList, "Projects")
         }
 
     })
+}
+
+function findProject(projectName) {
+
+    if (projectName === "Inbox") {
+        return projectName
+    }
+    else if (projectName === "Projects") {
+        return projectName
+    }
+
+    for (let i = 0; i < projectList.length; i++) {
+        let project = projectList[i]
+        if (project.getTitle === projectName) {
+            return project
+        }
+    }
 }
