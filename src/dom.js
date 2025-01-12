@@ -106,7 +106,7 @@ export function updateMainScreen(list, title) {
                 const projectItems = project.getItems
                 updateMainScreen(projectItems, project.getTitle)
             })
-            createIcons(rowContainer, `projects`)
+            createIcons(rowContainer, `Projects`, item, projectList)
             return
         }
 
@@ -212,7 +212,7 @@ function createIcons(parent, title, item, list) {
     addClass(iconList, "iconList")
     append(parent, iconList)
 
-    if (title != "projects") {
+    if (title != "Projects") {
         const details = create("img")
         addClass(details, `rowIcon`)
         addClass(details, `detailsIcon`)
@@ -242,6 +242,7 @@ function createIcons(parent, title, item, list) {
         const rowIndex = rowId.split("-")[1]
         list.splice(rowIndex, 1)
         updateMainScreen(list, title)
+        updateSideBar(projectList)
     })
 }
 
@@ -254,10 +255,6 @@ function seeDetails(item) {
     append(body, detailsWindow)
     detailsWindow.showModal()
 
-    const textContainer = document.createElement("div")
-    addClass(textContainer, `detailsTextContainer`)
-    append(detailsWindow, textContainer)
-
     const exitButton = document.createElement("img")
     addClass(exitButton, `exitButton`)
     exitButton.src = exitButtonSvg
@@ -266,17 +263,15 @@ function seeDetails(item) {
     })
     append(detailsWindow, exitButton)
 
+    const textContainer = document.createElement("div")
+    addClass(textContainer, `detailsTextContainer`)
+    append(detailsWindow, textContainer)
+
     const titleText = document.createElement("div")
     addClass(titleText, "titleText")
     addClass(titleText, `detailsWindowText`)
     editText(titleText, item.getTitle)
     append(textContainer, titleText)
-
-    const descText = document.createElement("div")
-    addClass(descText, "descText")
-    addClass(descText, `detailsWindowText`)
-    editText(descText, `Description: ${item.getDescription}`)
-    append(textContainer, descText)
 
     const dueDateText = document.createElement("div")
     addClass(dueDateText, "dueDateText")
@@ -295,6 +290,12 @@ function seeDetails(item) {
     addClass(completedStatusText, `detailsWindowText`)
     editText(completedStatusText, `Completed Status: ${item.getCompletedStatus}`)
     append(textContainer, completedStatusText)
+
+    const descText = document.createElement("div")
+    addClass(descText, "descText")
+    addClass(descText, `detailsWindowText`)
+    editText(descText, `Description: ${item.getDescription}`)
+    append(textContainer, descText)
 
 }
 
@@ -537,6 +538,12 @@ function addProjectAddButtonFunctionality() {
         addProjectToProjectList(newProjectName)
         inputContainer.remove()
         updateSideBar(projectList)
+
+        const currentPage = document.querySelector(".listTitle")
+        console.log(currentPage.textContent)
+        if (currentPage.textContent === "Projects") {
+            updateMainScreen(projectList, "Projects")
+        }
 
     })
 }
