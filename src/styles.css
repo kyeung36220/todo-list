@@ -35,6 +35,28 @@ h1, h2, h3, h4, h5, h6 {
   isolation: isolate;
 }
 
+/* Custom ScrollBar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgb(red, green, blue, 0); 
+  border-radius: 20px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #ffffff;
+  border-radius: 20px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #a6a6a6; 
+}
+
 
 body {
     font-family: "Fredoka";
@@ -122,6 +144,7 @@ body {
 
 #projectTitleContainer:hover {
   background-color: #7D5A50;
+  color: #faf3dd;
 }
 
 .projectsNav:hover {
@@ -250,30 +273,31 @@ body {
   filter: brightness(0) saturate(100%) invert(42%) sepia(11%) saturate(1152%) hue-rotate(327deg) brightness(85%) contrast(90%);
 }
 
+/* WINDOW STUFF */
+
 .window {
   position: absolute;
   background-color: #B4846C;
   color: white;
   font-size: 3rem;
   width: 70vw;
-  height: 70vh;
+  height: 80vh;
   margin: auto;
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
-  border: 5px solid #7D5A50;
+  border: 7px solid #7D5A50;
   border-radius: 50px;
-  padding: 40px 50px;
+  padding: 30px 60px;
   z-index: 5;
-}
-
-.detailsWindow {
   display: grid;
   grid-template-rows: 1fr 20fr;
   grid-template-areas: 
   "exitButton"
   "textContent";
+  overflow: hidden;
+  box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.555);
 }
 
 .exitButton {
@@ -285,12 +309,15 @@ body {
 
 .exitButton:hover {
   cursor: pointer;
-  filter: brightness(0) saturate(100%) invert(96%) sepia(65%) saturate(669%) hue-rotate(303deg) brightness(101%) contrast(98%);}
+  filter: brightness(0) saturate(100%) invert(96%) sepia(65%) saturate(669%) hue-rotate(303deg) brightness(101%) contrast(98%);
+}
 
-.detailsTextContainer .titleText {
+.window .titleText {
   text-align: center;
   font-size: 4rem;
 }
+
+/* See Details Window */
 
 .detailsTextContainer .descText {
   margin-top: 5vh;
@@ -298,4 +325,111 @@ body {
 
 .detailsTextContainer .completedStatusText {
   margin-bottom: 3vh;
+}
+
+dialog::backdrop {
+  backdrop-filter: blur(1px);
+}
+
+dialog:focus {
+  outline: none;
+}
+
+/* Add Task Window */
+.addTaskFormContainer {
+  display: flex;
+  flex-direction: column;
+  font-size: 2rem;
+  gap: 10px;
+  overflow: auto;
+}
+
+.input {
+  height: 5vh;
+  width: 20vw;
+  font-size: 1.7rem;
+  border-radius: 30px;
+  border-style: solid;
+  padding: 10px;
+}
+
+.inputRowContainer {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.textArea {
+  font-size: 1.7rem;
+  border-radius: 30px;
+  border-style: solid;
+  padding: 10px;
+}
+
+.inputPriority {
+  display: flex;
+}
+
+.inputPriorityLabel {
+  margin-right: 20px;
+}
+
+.list {
+  font-size: 1.7rem;
+  border-radius: 30px;
+  border-style: solid;
+  text-align: center;
+  background-color: white;
+  border-style: solid;
+}
+
+.list:active {
+  outline:none;
+}
+
+.inputCategory {
+  display: flex;
+}
+
+.inputCategoryLabel {
+  margin-right: 20px;
+}
+
+.categoryList {
+  width: 10vw;
+}
+
+.buttonContainer {
+  justify-content: center;
+  font-size: 2.5rem;
+  display: flex;
+  gap: 80px;
+  margin-top: auto;
+  margin-bottom: 30px;
+}
+
+.button {
+  padding: 10px 30px;
+  border-radius: 50px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.addButton {
+  background-color: rgb(1, 170, 1);
+}
+
+.addButton:hover {
+  background-color: rgb(82, 233, 82);
+}
+
+.cancelButton {
+  background-color: rgb(170, 1, 1);
+}
+
+.cancelButton:hover {
+  background-color: rgb(242, 80, 80);
 }

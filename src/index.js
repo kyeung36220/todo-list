@@ -59,13 +59,17 @@ class Project {
         return this.itemList
     }
 
+    get getIndex() {
+        return this.index
+    }
+
     addItem(title, description, dueDate, priority, completedStatus, listNumber) {
         let item = new Item(title, description, dueDate, priority, completedStatus, getProjectItemListLength(listNumber))
         this.itemList.push(item)
     }
 }
 
-function addItemToInbox(title, description, dueDate, priority, completedStatus) {
+export function addItemToInbox(title, description, dueDate, priority, completedStatus) {
     const item = new Item(title, description, dueDate, priority, completedStatus, getInboxListLength())
     inboxList.push(item)
 }

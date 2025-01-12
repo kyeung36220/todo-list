@@ -1,5 +1,5 @@
-import { select, create, editText, addClass, append, capitalize, insert, addId } from "./domFunctions"
-import { inboxList, todayTasksList, weekTasksList, projectList, noteList } from "./index.js"
+import { select, create, editText, addClass, removeClass, append, capitalize, insert, addId } from "./domFunctions"
+import { inboxList, todayTasksList, weekTasksList, projectList, noteList, addItemToInbox } from "./index.js"
 import checkedSvg from "./assets/checked.svg"
 import detailsSvg from "./assets/details.svg"
 import editSvg from "./assets/edit.svg"
@@ -75,7 +75,7 @@ export function updateMainScreen(list, title) {
     addTaskButton.src = plusWithCircleSvg
     insert(mainScreen, addTaskButton)
 
-    addTaskButton.addEventListener("click", addProjectWindow)
+    addTaskButton.addEventListener("click", addTaskWindow)
 
     const listTitle = create("div")
     addClass(listTitle, "listTitle")
@@ -85,7 +85,7 @@ export function updateMainScreen(list, title) {
     list.forEach((item, index) => {
         const rowContainer = create("div")
         addClass(rowContainer, "rowContainer")
-        addId(rowContainer, `rowIndex${index}`)
+        addId(rowContainer, `rowIndex-${index}`)
         append(mainScreen, rowContainer)
     
         //text
@@ -108,6 +108,10 @@ export function updateMainScreen(list, title) {
             return
         }
 
+        rowTitle.addEventListener("click", () => {
+            seeDetails(item)
+        })
+    
         const rowDueDate = create("div")
         editText(rowDueDate, `${item.getDueDate}`)
         addClass(rowDueDate, "rowDueDate")
@@ -126,7 +130,7 @@ export function updateMainScreen(list, title) {
         })
 
         //icons
-        createIcons(rowContainer, `normal`, item)
+        createIcons(rowContainer, title, item, list)
     })
 }
 
@@ -197,12 +201,12 @@ function addSideBar() {
     addSideBarButtonFunctionality()
 }
 
-function createIcons(parent, page, item) {
+function createIcons(parent, title, item, list) {
     const iconList = create("div")
     addClass(iconList, "iconList")
     append(parent, iconList)
 
-    if (page === "normal") {
+    if (title != "projects") {
         const details = create("img")
         addClass(details, `rowIcon`)
         addClass(details, `detailsIcon`)
@@ -226,21 +230,23 @@ function createIcons(parent, page, item) {
     addClass(trash, `trashIcon`)
     trash.src = trashSvg
     append(iconList, trash)
+
+    trash.addEventListener("click", () => {
+        const rowId= trash.parentElement.parentElement.getAttribute("id")
+        const rowIndex = rowId.split("-")[1]
+        list.splice(rowIndex, 1)
+        updateMainScreen(list, title)
+    })
 }
 
 function seeDetails(item) {
     const body = document.querySelector("body")
 
-    const detailsWindow = document.createElement("div")
+    const detailsWindow = document.createElement("dialog")
     addClass(detailsWindow, "detailsWindow")
     addClass(detailsWindow, "window")
     append(body, detailsWindow)
-
-    const existingDetailsWindow = document.querySelector(".detailsWindow")
-    if (existingDetailsWindow.innerHTML != "") {
-        detailsWindow.remove()
-        return
-    }
+    detailsWindow.showModal()
 
     const textContainer = document.createElement("div")
     addClass(textContainer, `detailsTextContainer`)
@@ -249,7 +255,9 @@ function seeDetails(item) {
     const exitButton = document.createElement("img")
     addClass(exitButton, `exitButton`)
     exitButton.src = exitButtonSvg
-    exitButton.addEventListener("click", () => {detailsWindow.remove()})
+    exitButton.addEventListener("click", () => {
+        detailsWindow.remove()
+    })
     append(detailsWindow, exitButton)
 
     const titleText = document.createElement("div")
@@ -284,6 +292,212 @@ function seeDetails(item) {
 
 }
 
-function addProjectWindow() {
-    
+function addTaskWindow() {
+
+    const body = document.querySelector("body")
+    const window = document.createElement("dialog")
+    addClass(window, "addTaskWindow")
+    addClass(window, "window")
+    append(body, window)
+    window.showModal()
+
+    const exitButton = document.createElement("div")
+    addClass(exitButton, `exitButton`)
+    append(window, exitButton)
+
+    const formContainer = document.createElement("form")
+    addClass(formContainer, `addTaskFormContainer`)
+    append(window, formContainer)
+
+    const titleText = document.createElement("div")
+    addClass(titleText, "titleText")
+    editText(titleText, "Add Task")
+    append(formContainer, titleText)
+
+    // task title
+    const inputRowContainer = document.createElement("div")
+    addClass(inputRowContainer, "inputRowContainer")
+    append(formContainer, inputRowContainer)
+
+    const inputTaskLabel = document.createElement("span")
+    addClass(inputTaskLabel, "inputTaskLabel")
+    addClass(inputTaskLabel, "label")
+    editText(inputTaskLabel, "Task Name:")
+    append(inputRowContainer, inputTaskLabel)
+
+    const inputTaskName = document.createElement('input')
+    addClass(inputTaskName, "input")
+    inputTaskName.type = 'text'
+    inputTaskName.name = 'taskName'
+    inputTaskName.placeholder = 'Task Name'
+    append(inputRowContainer, inputTaskName)
+
+    // description
+    const inputRowContainer2 = document.createElement("div")
+    addClass(inputRowContainer2, "inputRowContainer")
+    append(formContainer, inputRowContainer2)
+
+    const inputDescLabel = document.createElement("span")
+    addClass(inputDescLabel, "inputDescLabel")
+    addClass(inputDescLabel, "label")
+    editText(inputDescLabel, "Task Description:")
+    append(inputRowContainer2, inputDescLabel)
+
+    const inputDesc = document.createElement('textarea')
+    addClass(inputDesc, "textArea")
+    inputDesc.name = 'taskDesc'
+    inputDesc.placeholder = 'Task Description'
+    inputDesc.rows ="3"
+    inputDesc.cols = "25"
+    append(inputRowContainer2, inputDesc)
+
+    // due date
+    const inputRowContainer3 = document.createElement("div")
+    addClass(inputRowContainer3, "inputRowContainer")
+    append(formContainer, inputRowContainer3)
+
+    const inputDueDateLabel = document.createElement("span")
+    addClass(inputDueDateLabel, "inputDueDateLabel")
+    addClass(inputDueDateLabel, "label")
+    editText(inputDueDateLabel, "Task Due Date:")
+    append(inputRowContainer3, inputDueDateLabel)
+
+    const inputDueDate = document.createElement('input')
+    addClass(inputDueDate, "input")
+    inputDueDate.type = 'date'
+    inputDueDate.name = 'taskDueDate'
+    inputDueDate.placeholder = 'Due Date'
+    append(inputRowContainer3, inputDueDate)
+
+    // priority dropdown
+    const inputPriority = document.createElement('div');
+    addClass(inputPriority, "inputPriority")
+    append(formContainer, inputPriority)
+
+    const inputPriorityLabel = document.createElement("span")
+    addClass(inputPriorityLabel, "inputPriorityLabel")
+    editText(inputPriorityLabel, "Priority:")
+    append(inputPriority, inputPriorityLabel)
+
+    const priorityList = document.createElement("select")
+    addClass(priorityList, "priorityList")
+    addClass(priorityList, "list")
+    priorityList.name = "Priority"
+    append(inputPriority, priorityList)
+
+    const priorityLow = document.createElement("option")
+    priorityLow.value = "Low"
+    editText(priorityLow, "Low")
+    append(priorityList, priorityLow)
+
+    const priorityMed = document.createElement("option")
+    priorityMed.value = "Medium"
+    editText(priorityMed, "Medium")
+    append(priorityList, priorityMed)
+
+    const priorityHigh = document.createElement("option")
+    priorityHigh.value = "High"
+    editText(priorityHigh, "High")
+    append(priorityList, priorityHigh)
+
+    // category dropdown
+    const inputCategory = document.createElement('div');
+    addClass(inputCategory, "inputCategory")
+    append(formContainer, inputCategory)
+
+    const inputCategoryLabel = document.createElement("span")
+    addClass(inputCategoryLabel, "inputCategoryLabel")
+    editText(inputCategoryLabel, "Category:")
+    append(inputCategory, inputCategoryLabel)
+
+    const categoryList = document.createElement("select")
+    addClass(categoryList, "categoryList")
+    addClass(categoryList, "list")
+    categoryList.name = "Category"
+    append(inputCategory, categoryList)
+
+    const inbox = document.createElement("option")
+    inbox.value = "inbox"
+    editText(inbox, "Inbox")
+    append(categoryList, inbox)
+
+    projectList.forEach((project) => {
+        const choice = document.createElement("option")
+        choice.value = `projectIndex-${project.getIndex}`
+        editText(choice, `${project.getTitle}`)
+        append(categoryList, choice)
+    })
+
+    // Add and Cancel Button
+    const buttonContainer = document.createElement("div")
+    addClass(buttonContainer, "buttonContainer")
+    append(formContainer, buttonContainer)
+
+    const addButton = document.createElement("div")
+    addClass(addButton, "addButton")
+    addClass(addButton, "button")
+    editText(addButton, "Add Task")
+    append(buttonContainer, addButton)
+
+    addButton.addEventListener("click", () => {
+
+        const name = inputTaskName.value
+        const description = inputDesc.value
+        const dueDate = inputDueDate.value
+        const priority = priorityList.value
+        const category = categoryList.value
+
+        const asterisk = document.createElement("span")
+        editText(asterisk, "*")
+
+        if (name === "") {
+            if (inputTaskLabel.childNodes.length > 1 === true) {
+                return
+            }
+            append(inputTaskLabel, asterisk)
+            asterisk.style.color = "red"
+            inputTaskName.style.border = "2px solid red"
+            return
+        }
+
+        inputTaskLabel.style.color = "white"
+        inputTaskName.style.border = ""
+
+        if (dueDate === "") {
+            if (inputDueDateLabel.childNodes.length > 1 === true) {
+                return
+            }
+            append(inputDueDateLabel, asterisk)
+            asterisk.style.color = "red"
+            inputDueDate.style.border = "2px solid red"
+            return
+        }
+
+        inputDueDateLabel.style.color = "white"
+        inputDueDate.style.border = ""
+        
+        if (category === "inbox") {
+            addItemToInbox(name, description, dueDate, priority, "Not Completed")
+            window.remove()
+            return
+        }
+
+        else {
+            const projectIndex = category.split("-")[1]
+            const project = projectList[projectIndex]
+            project.addItem(name, description, dueDate, priority, "Not Completed", projectIndex)
+            window.remove()
+            return
+        }
+    })
+
+    const cancelButton = document.createElement("div")
+    addClass(cancelButton, "cancelButton")
+    addClass(cancelButton, "button")
+    editText(cancelButton, "Cancel")
+    append(buttonContainer, cancelButton)
+
+    cancelButton.addEventListener("click", () => {
+        window.remove()
+    })
 }

@@ -14,6 +14,10 @@ export function addClass(item, className) {
     item.classList.add(className)
 }
 
+export function removeClass(item, className) {
+    item.classList.remove(className)
+}
+
 export function append(parent, child) {
     parent.appendChild(child)
 }
