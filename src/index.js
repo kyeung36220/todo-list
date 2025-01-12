@@ -78,7 +78,7 @@ function getInboxListLength() {
     return inboxList.length
 }
 
-function addProjectToProjectList(title) {
+export function addProjectToProjectList(title) {
     const project = new Project(title, getProjectListLength())
     projectList.push(project)
 }

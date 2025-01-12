@@ -1,5 +1,5 @@
 import { select, create, editText, addClass, removeClass, append, capitalize, insert, addId } from "./domFunctions"
-import { inboxList, todayTasksList, weekTasksList, projectList, noteList, addItemToInbox } from "./index.js"
+import { inboxList, todayTasksList, weekTasksList, projectList, noteList, addItemToInbox, addProjectToProjectList } from "./index.js"
 import checkedSvg from "./assets/checked.svg"
 import detailsSvg from "./assets/details.svg"
 import editSvg from "./assets/edit.svg"
@@ -10,6 +10,7 @@ import plusWithCircleSvg from "./assets/plusWithCircle.svg"
 import trashSvg from "./assets/trash.svg"
 import uncheckedSvg from "./assets/unchecked.svg"
 import exitButtonSvg from "./assets/x.svg"
+import checkmarkSvg from "./assets/checkmark.svg"
 
 export function initialize() {
     const body = select("body")
@@ -46,6 +47,7 @@ export function initialize() {
 
 export function updateSideBar(projectList) {
     const projectNavContainer = select(".projectNavContainer")
+    projectNavContainer.innerHTML = ""
     projectList.forEach((project, index) => {
         const item = create("div")
         const name = project.getTitle
@@ -191,6 +193,10 @@ function addSideBar() {
     addClass(projectAddButton, "projectAddButton")
     projectAddButton.src = plusOnlySvg
     append(projectTitleContainer, projectAddButton)
+
+    projectAddButton.addEventListener("click", () => {
+        addProjectAddButtonFunctionality()
+    })
 
     const projectNavContainer = create("div")
     addClass(projectNavContainer, "projectNavContainer")
@@ -478,6 +484,7 @@ function addTaskWindow() {
         
         if (category === "inbox") {
             addItemToInbox(name, description, dueDate, priority, "Not Completed")
+            updateMainScreen(inboxList, "Inbox")
             window.remove()
             return
         }
@@ -487,6 +494,7 @@ function addTaskWindow() {
             const project = projectList[projectIndex]
             project.addItem(name, description, dueDate, priority, "Not Completed", projectIndex)
             window.remove()
+            updateMainScreen(project.getItems, project.getTitle)
             return
         }
     })
@@ -499,5 +507,36 @@ function addTaskWindow() {
 
     cancelButton.addEventListener("click", () => {
         window.remove()
+    })
+}
+
+function addProjectAddButtonFunctionality() {
+    const sideBar = document.querySelector("#sideBar")
+
+    const inputContainer = document.createElement("div")
+    addClass(inputContainer, "projectNavChild")
+    addId(inputContainer, "projectNavInputContainer")
+    append(sideBar, inputContainer)
+
+    const nameInput = document.createElement("input")
+    addClass(nameInput, `nameInput`)
+    append(inputContainer, nameInput)
+
+    const checkmark = document.createElement("img")
+    addClass(checkmark, `checkmark`)
+    checkmark.src = checkmarkSvg
+    append(inputContainer, checkmark)
+
+    checkmark.addEventListener("click", () => {
+        if (nameInput.value === "") {
+            inputContainer.remove()
+            return
+        }
+
+        const newProjectName = nameInput.value
+        addProjectToProjectList(newProjectName)
+        inputContainer.remove()
+        updateSideBar(projectList)
+
     })
 }

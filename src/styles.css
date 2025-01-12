@@ -159,6 +159,36 @@ body {
 
 .projectAddButton:hover {
   cursor: pointer;
+  filter: brightness(0) saturate(100%) invert(99%) sepia(3%) saturate(1832%) hue-rotate(323deg) brightness(90%) contrast(119%);
+}
+
+#projectNavInputContainer {
+  display: flex;
+  align-items: center;
+  margin-left: 50px;
+  padding-right: 0px
+}
+
+#projectNavInputContainer:hover {
+  background-color: #B4846C;
+}
+
+.checkmark {
+  height: 30px;
+  margin-left: auto;
+  filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(49deg) brightness(103%) contrast(103%);
+}
+
+.checkmark:hover {
+  cursor: pointer;
+  filter: brightness(0) saturate(100%) invert(32%) sepia(86%) saturate(2131%) hue-rotate(131deg) brightness(101%) contrast(101%);
+}
+
+#projectNavInputContainer .nameInput {
+  border-radius: 50px;
+  border-style: solid;
+  width: 130px;
+  font-size: 1.5rem;
 }
 
 .projectNavContainer:hover {
@@ -261,16 +291,16 @@ body {
 .addTaskButton {
   position: absolute;
   top: 81vh;
-  right: 5vw;
+  left: 6.5vw;
   display: flex;
-  height: 110px;
+  height: 90px;
   z-index: 3;
-  filter: brightness(0) saturate(100%) invert(93%) sepia(29%) saturate(4350%) hue-rotate(299deg) brightness(75%) contrast(82%);
+  filter: brightness(0) saturate(100%) invert(93%) sepia(7%) saturate(0%) hue-rotate(133deg) brightness(106%) contrast(107%);
 }
 
 .addTaskButton:hover {
   cursor: pointer;
-  filter: brightness(0) saturate(100%) invert(42%) sepia(11%) saturate(1152%) hue-rotate(327deg) brightness(85%) contrast(90%);
+  filter: brightness(0) saturate(100%) invert(96%) sepia(65%) saturate(669%) hue-rotate(303deg) brightness(101%) contrast(98%);
 }
 
 /* WINDOW STUFF */
