@@ -62,7 +62,7 @@ export function updateSideBar(projectList) {
             const project = projectList[projectIndex]
             const projectItems = project.getItems
             currentPage = project.getTitle
-            updateMainScreen(projectItems, project.getTitle)
+            updateMainScreen()
         })
 
         append(projectNavContainer, item)
@@ -70,7 +70,7 @@ export function updateSideBar(projectList) {
 
 }
 
-export function updateMainScreen(list, title) {
+export function updateMainScreen() {
     updateLocalStorage()
     const mainScreen = select("#mainScreen")
     mainScreen.innerHTML = ""
@@ -80,10 +80,29 @@ export function updateMainScreen(list, title) {
     addClass(addTaskButton, "addTaskButton")
     addTaskButton.src = plusWithCircleSvg
     insert(mainScreen, addTaskButton)
-
     addTaskButton.addEventListener("click", addTaskWindow)
 
-    let projectIndex = findProject(currentPage).getIndex
+    let projectIndex
+    let list
+    let title
+
+    if (["Inbox", "Today", "Week", "Projects"].includes(currentPage) === false) {
+        const project = findProject(currentPage)
+        list = project.getItems
+        title = project.getTitle
+        projectIndex = project.getIndex
+    }
+    else if (arguments[0] === "projectItemClicked") {
+        const project = arguments[1]
+        list = project.getItems
+        title = project.getTitle
+        projectIndex = project.getIndex
+    }
+    else {
+        list = findProject(currentPage)
+        title = currentPage
+        projectIndex = currentPage
+    }
 
     const listTitle = create("div")
     addClass(listTitle, "listTitle")
@@ -111,7 +130,7 @@ export function updateMainScreen(list, title) {
                 console.log(projectIndex)
                 const project = projectList[projectIndex]
                 const projectItems = project.getItems
-                updateMainScreen(projectItems, project.getTitle)
+                updateMainScreen("projectItemClicked", project)
             })
             createIcons(rowContainer, `Projects`, item, projectList)
             return
@@ -148,7 +167,7 @@ function addSideBarButtonFunctionality() {
     const inboxButton = select(".inboxNav")
     inboxButton.addEventListener("click", () => {
         currentPage = "Inbox"
-        updateMainScreen(inboxList, currentPage)
+        updateMainScreen()
         return
     })
 
@@ -156,7 +175,7 @@ function addSideBarButtonFunctionality() {
     todayButton.addEventListener("click", () => {
         updateTodayAndWeekLists()
         currentPage = "Today"
-        updateMainScreen(todayTasksList, currentPage)
+        updateMainScreen()
         return
     })
 
@@ -165,14 +184,14 @@ function addSideBarButtonFunctionality() {
     weekButton.addEventListener("click", () => {
         updateTodayAndWeekLists()
         currentPage = "Week"
-        updateMainScreen(weekTasksList, currentPage)
+        updateMainScreen()
         return
     })
 
     const projectsButton = select(".projectsNav")
     projectsButton.addEventListener("click", () => {
         currentPage = "Projects"
-        updateMainScreen(projectList, currentPage)
+        updateMainScreen()
         return
     })
 }
@@ -258,7 +277,7 @@ function createIcons(parent, title, item, list) {
         const rowId= trash.parentElement.parentElement.getAttribute("id")
         const rowIndex = rowId.split("-")[3]
         list.splice(rowIndex, 1)
-        updateMainScreen(list, title)
+        updateMainScreen()
         updateSideBar(projectList)
     })
 }
@@ -400,10 +419,10 @@ function editTask(e, item) {
         }
 
         if (currentPage === "Inbox"){
-            updateMainScreen(inboxList, "Inbox")
+            updateMainScreen()
         }
         else {
-            updateMainScreen(project.getItems, project.getTitle)
+            updateMainScreen()
         }
         window.remove()
         
@@ -600,7 +619,7 @@ function addTaskWindow() {
         
         if (category === "Inbox") {
             addItemToInbox(name, description, dueDate, priority, "Not Completed")
-            updateMainScreen(inboxList, "Inbox")
+            updateMainScreen()
             window.remove()
             return
         }
@@ -610,7 +629,7 @@ function addTaskWindow() {
             const project = projectList[projectIndex]
             project.addItem(name, description, dueDate, priority, "Not Completed", projectIndex)
             window.remove()
-            updateMainScreen(project.getItems, project.getTitle)
+            updateMainScreen()
             return
         }
     })
@@ -654,13 +673,25 @@ function addProjectAddButtonFunctionality() {
             return
         }
 
-        else if (nameInput.value.length > 15) {
-            alert("Project Name can not be over 15 characters")
+        if (nameInput.value.length > 15) {
+            alert("Project Name can not be over 15 characters.")
             nameInput.value = ""
             return
         }
 
-        console.log(nameInput.length)
+        if (["Index", "Today", "Week", "Projects"].includes(nameInput.value)) {
+            alert("Project Name can not be a default.")
+            nameInput.value = ""
+            return
+        }
+
+        for (let i = 0; i < projectList.length; i++) {
+            if (projectList[i].getTitle === nameInput.value) {
+                alert("Project Name already exists!")
+                nameInput.value = ""
+                return
+            }
+        }
 
         const newProjectName = nameInput.value
         addProjectToProjectList(newProjectName)
@@ -668,7 +699,7 @@ function addProjectAddButtonFunctionality() {
         updateSideBar(projectList)
 
         if (currentPage === "Projects") {
-            updateMainScreen(projectList, "Projects")
+            updateMainScreen()
         }
 
     })
@@ -686,16 +717,16 @@ function addProjectAddButtonFunctionality() {
 function findProject(projectName) {
 
     if (projectName === "Inbox") {
-        return projectName
+        return inboxList
     }
     else if (projectName === "Projects") {
-        return projectName
+        return projectList
     }
     else if (projectName === "Today") {
-        return projectName
+        return todayTasksList
     }
     else if (projectName === "Week") {
-        return projectName
+        return weekTasksList
     }
 
     for (let i = 0; i < projectList.length; i++) {

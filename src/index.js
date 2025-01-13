@@ -215,4 +215,4 @@ export function updateLocalStorage() {
 // localStorage.clear()
 addInitialTasks()
 initialize()
-updateMainScreen(inboxList, "Inbox")
+updateMainScreen()
