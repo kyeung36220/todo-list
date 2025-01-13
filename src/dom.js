@@ -18,8 +18,7 @@ export function initialize() {
     const header = select("#header")
     const sideBar = select("#sideBar")
 
-    const menuImage = create("img")
-    addClass(menuImage, "menuImage")
+    const menuImage = createUIItem("menuImage", "img", [], header)
     menuImage.src = menuImageSvg
     menuImage.addEventListener("click", () => {
         if (sideBar.innerHTML === "") {
@@ -35,37 +34,27 @@ export function initialize() {
         sideBar.style.padding = "0"
     })
 
-    append(header, menuImage)
-
-    const headerTitle = create("div")
+    const headerTitle = createUIItem("headerTitle", "div", [], header)
     editText(headerTitle, "todo")
-    addClass(headerTitle, "headerTitle")
-    append(header, headerTitle)
 
     addSideBar()
-
 }
 
 export function updateSideBar(projectList) {
     updateLocalStorage()
+
     const projectNavContainer = select(".projectNavContainer")
     projectNavContainer.innerHTML = ""
     projectList.forEach((project, index) => {
-        const item = create("div")
-        const name = project.getTitle
-        editText(item, name)
-        addClass(item, "projectNavChild")
+        const item = createUIItem("projectNavChild", "div", [], projectNavContainer)
+        editText(item, project.getTitle)
         addId(item, `project-${index}`)
 
         item.addEventListener("click", () => {
             const projectIndex = item.getAttribute("id").split("-")[1]
-            const project = projectList[projectIndex]
-            const projectItems = project.getItems
-            currentPage = project.getTitle
+            currentPage = projectList[projectIndex].getTitle
             updateMainScreen()
         })
-
-        append(projectNavContainer, item)
     })
 
 }
@@ -76,10 +65,8 @@ export function updateMainScreen() {
     mainScreen.innerHTML = ""
 
     // add plus button
-    const addTaskButton = create("img")
-    addClass(addTaskButton, "addTaskButton")
+    const addTaskButton = createUIItem("addTaskButton", "img", [], mainScreen)
     addTaskButton.src = plusWithCircleSvg
-    insert(mainScreen, addTaskButton)
     addTaskButton.addEventListener("click", addTaskWindow)
 
     let projectIndex
@@ -104,34 +91,27 @@ export function updateMainScreen() {
         projectIndex = currentPage
     }
 
-    const listTitle = create("div")
-    addClass(listTitle, "listTitle")
+    const listTitle = createUIItem("listTitle", "div", [], mainScreen)
     editText(listTitle, title)
-    append(mainScreen, listTitle)
 
     list.forEach((item, index) => {
-        const rowContainer = create("div")
-        addClass(rowContainer, "rowContainer")
+        const rowContainer = createUIItem("rowContainer", "div", [], mainScreen)
         addId(rowContainer, `project-${projectIndex}-itemIndex-${index}`)
-        append(mainScreen, rowContainer)
     
         //text
-        const rowTitle = create("div")
+        const rowTitle = createUIItem("rowTitle", "div", [], rowContainer)
         editText(rowTitle, `${item.getTitle}`)
-        addClass(rowTitle, "rowTitle")
-        append(rowContainer, rowTitle)
     
         //if project list, no other icons & text necessary
         if (title === "Projects") {
             addId(rowTitle, `projectTitle-${index}`)
             addClass(rowTitle, `projectTitle`)
+
             rowTitle.addEventListener("click", () => {
                 const projectIndex = getId(rowTitle).split("-")[1]
-                console.log(projectIndex)
-                const project = projectList[projectIndex]
-                const projectItems = project.getItems
-                updateMainScreen("projectItemClicked", project)
+                updateMainScreen("projectItemClicked", projectList[projectIndex])
             })
+
             createIcons(rowContainer, `Projects`, item, projectList)
             return
         }
@@ -140,15 +120,11 @@ export function updateMainScreen() {
             seeDetails(item)
         })
     
-        const rowDueDate = create("div")
+        const rowDueDate = createUIItem("rowDueDate", "div", [], rowContainer)
         editText(rowDueDate, `${item.UIDueDate}`)
-        addClass(rowDueDate, "rowDueDate")
-        append(rowContainer, rowDueDate)
 
         //checkbox
-        const checkBox = create("img")
-        addClass(checkBox, "checkBox")
-        addClass(checkBox, "rowIcon")
+        const checkBox = createUIItem("checkBox", "img", ["rowIcon"], "")
         checkBox.src = item.getCompletedStatus === "Completed" ? checkedSvg : uncheckedSvg
         insert(rowContainer, checkBox, 0)
 
@@ -205,61 +181,42 @@ function addSideBar() {
     ]
 
     sideBarLabels.forEach((text) => {
-        const item = create("div")
+        const item = createUIItem("itemSideBarLabels", "div", [`${text}Nav`,`sideBarChild`], sideBar)
         editText(item, capitalize(text))
-        addClass(item, `${text}Nav`)
-        addClass(item, `sideBarChild`)
-        append(sideBar, item)
     })
 
-    const projectTitleContainer = create("div")
+    const projectTitleContainer = createUIItem("projectTitleContainer", "div", [], sideBar)
     addId(projectTitleContainer, "projectTitleContainer")
-    append(sideBar, projectTitleContainer)
 
-    const projectTitle = create("div")
+    const projectTitle = createUIItem("projectSideBarTitle", "div", [`projectsNav`], projectTitleContainer)
     editText(projectTitle, "Projects")
-    addClass(projectTitle, `projectsNav`)
-    append(projectTitleContainer, projectTitle)
 
-    const projectAddButton = create("img")
-    addClass(projectAddButton, "projectAddButton")
+    const projectAddButton = createUIItem("projectAddButton", "img", [], projectTitleContainer)
     projectAddButton.src = plusOnlySvg
-    append(projectTitleContainer, projectAddButton)
 
     projectAddButton.addEventListener("click", () => {
         addProjectAddButtonFunctionality()
     })
 
-    const projectNavContainer = create("div")
-    addClass(projectNavContainer, "projectNavContainer")
-    addClass(projectNavContainer, `sideBarChild`)
-    append(sideBar, projectNavContainer)
+    const projectNavContainer = createUIItem("projectNavContainer", "div", [`sideBarChild`], sideBar)
     updateSideBar(projectList)
 
     addSideBarButtonFunctionality()
 }
 
 function createIcons(parent, title, item, list) {
-    const iconList = create("div")
-    addClass(iconList, "iconList")
-    append(parent, iconList)
+    const iconList = createUIItem("iconList", "div", [], parent)
 
     if (title != "Projects") {
-        const details = create("img")
-        addClass(details, `rowIcon`)
-        addClass(details, `detailsIcon`)
+        const details = createUIItem("detailsIcon", "img", ["rowIcon"], iconList)
         details.src = detailsSvg
-        append(iconList, details)
 
         details.addEventListener("click", () => {
             seeDetails(item)
         })
 
-        const edit = create("img")
-        addClass(edit, `rowIcon`)
-        addClass(edit, `editIcon`)
+        const edit = createUIItem("editIcon", "img", ["rowIcon"], iconList)
         edit.src = editSvg
-        append(iconList, edit)
 
         edit.addEventListener("click", (e) => {
             editTask(e, item)
@@ -267,11 +224,8 @@ function createIcons(parent, title, item, list) {
 
     }
 
-    const trash = create("img")
-    addClass(trash, `rowIcon`)
-    addClass(trash, `trashIcon`)
+    const trash = createUIItem("trashIcon", "img", ["rowIcon"], iconList)
     trash.src = trashSvg
-    append(iconList, trash)
 
     trash.addEventListener("click", () => {
         const rowId= trash.parentElement.parentElement.getAttribute("id")
@@ -285,73 +239,51 @@ function createIcons(parent, title, item, list) {
 function seeDetails(item) {
     const body = select("body")
 
-    const detailsWindow = create("dialog")
-    addClass(detailsWindow, "detailsWindow")
-    addClass(detailsWindow, "window")
-    append(body, detailsWindow)
+    const detailsWindow = createUIItem("detailsWindow", "dialog", ["window"], body)
     detailsWindow.showModal()
 
-    const exitButton = create("img")
-    addClass(exitButton, `exitButton`)
+    const exitButton = createUIItem("exitButton", "img", [], detailsWindow)
     exitButton.src = exitButtonSvg
     exitButton.addEventListener("click", () => {
         detailsWindow.remove()
     })
-    append(detailsWindow, exitButton)
 
-    const textContainer = create("div")
-    addClass(textContainer, `detailsTextContainer`)
-    append(detailsWindow, textContainer)
+    const textContainer = createUIItem("detailsTextContainer", "div", [], detailsWindow)
 
-    const titleText = create("div")
-    addClass(titleText, "titleText")
-    addClass(titleText, `detailsWindowText`)
+    const titleText = createUIItem("titleText", "div", [`detailsWindowText`], textContainer)
     editText(titleText, item.getTitle)
-    append(textContainer, titleText)
 
-    const dueDateLabel = create("div")
-    addClass(dueDateLabel, `detailsWindowText`)
+    const dueDateLabel = createUIItem(`detailsWindowText`, "div", [], textContainer)
     editText(dueDateLabel, `Due Date: `)
     dueDateLabel.style.fontWeight = "bold"
-    append(textContainer, dueDateLabel)
 
-    const dueDateText = create("span")
+    const dueDateText = createUIItem(``, "span", [], dueDateLabel)
     editText(dueDateText, `${item.UIDueDate}`)
     dueDateText.style.fontWeight = "normal"
-    append(dueDateLabel, dueDateText)
 
-    const priorityLabel = create("div")
-    addClass(priorityLabel, `detailsWindowText`)
+    const priorityLabel = createUIItem(`detailsWindowText`, "div", [], textContainer)
     editText(priorityLabel, `Priority: `)
     priorityLabel.style.fontWeight = "bold"
-    append(textContainer, priorityLabel)
 
-    const priorityText = create("span")
+    const priorityText = createUIItem(``, "span", [], priorityLabel)
     editText(priorityText, `${item.getPriority}`)
     priorityText.style.fontWeight = "normal"
-    append(priorityLabel, priorityText)
 
-    const completedStatusLabel = create("div")
-    addClass(completedStatusLabel, `detailsWindowText`)
+    const completedStatusLabel = createUIItem(`detailsWindowText`, "div", [], textContainer)
     editText(completedStatusLabel, `Completed Status: `)
     completedStatusLabel.style.fontWeight = "bold"
-    append(textContainer, completedStatusLabel)
 
-    const completedStatusText = create("span")
+    const completedStatusText = createUIItem(``, "span", [], completedStatusLabel)
     editText(completedStatusText, `${item.getCompletedStatus}`)
     completedStatusText.style.fontWeight = "normal"
-    append(completedStatusLabel, completedStatusText)
 
-    const descLabel = create("div")
-    addClass(descLabel, `detailsWindowText`)
+    const descLabel = createUIItem(`detailsWindowText`, "div", [], textContainer)
     editText(descLabel, `Description: `)
     descLabel.style.fontWeight = "bold"
-    append(textContainer, descLabel)
 
-    const descText = create("span")
+    const descText = createUIItem(``, "span", [], descLabel)
     editText(descText, `${item.getDescription}`)
     descText.style.fontWeight = "normal"
-    append(descLabel, descText)
 
 }
 
@@ -390,9 +322,8 @@ function editTask(e, item) {
     }
 
     originalAddButton.remove()
-    const editButton = create("div")
-    addClass(editButton, "editButton")
-    addClass(editButton, "button")
+
+    const editButton = createUIItem(`editButton`, "div", ["button"], "")
     editText(editButton, "Edit Task")
     insert(buttonContainer, editButton, 0)
 
@@ -590,24 +521,16 @@ function addTaskWindow() {
 function addProjectAddButtonFunctionality() {
     const sideBar = select("#sideBar")
 
-    const inputContainer = create("div")
-    addClass(inputContainer, "projectNavChild")
+    const inputContainer = createUIItem("projectNavChild", "div", ["button"], sideBar)
     addId(inputContainer, "projectNavInputContainer")
-    append(sideBar, inputContainer)
 
-    const nameInput = create("input")
-    addClass(nameInput, `nameInput`)
+    const nameInput = createUIItem("nameInput", "input", [], inputContainer)
     nameInput.placeholder = "Project Name"
-    append(inputContainer, nameInput)
 
-    const iconContainer = create("div")
-    addClass(iconContainer, "iconContainer")
-    append(inputContainer, iconContainer)
+    const iconContainer = createUIItem("iconContainer", "div", [], inputContainer)
 
-    const checkmark = create("img")
-    addClass(checkmark, `checkmark`)
+    const checkmark = createUIItem("checkmark", "img", [], iconContainer)
     checkmark.src = checkmarkSvg
-    append(iconContainer, checkmark)
 
     checkmark.addEventListener("click", () => {
         if (nameInput.value === "") {
@@ -646,10 +569,8 @@ function addProjectAddButtonFunctionality() {
 
     })
 
-    const xIcon = create("img")
-    addClass(xIcon, `xIcon`)
+    const xIcon = createUIItem("xIcon", "img", [], iconContainer)
     xIcon.src = exitButtonSvg
-    append(iconContainer, xIcon)
 
     xIcon.addEventListener("click", () => {
         inputContainer.remove()
@@ -682,14 +603,19 @@ function findProject(projectName) {
 function createUIItem(stringTitle, typeOfElement, arrayOfExtraClasses, appendingParent) {
     const item = create(typeOfElement)
 
-    addClass(item, stringTitle)
+    if (stringTitle != "") {
+        addClass(item, stringTitle)
+    }
+
     if (arrayOfExtraClasses.length > 0) {
         for (let i = 0; i < arrayOfExtraClasses.length; i++) {
             addClass(item, arrayOfExtraClasses[i])
         }
     }
 
-    append(appendingParent, item)
+    if (appendingParent != "") {
+        append(appendingParent, item)
+    }
 
     return item
 }
