@@ -2,10 +2,10 @@ import "./styles.css";
 import { initialize, updateSideBar, updateMainScreen } from "./dom.js"
 import { isToday, isThisWeek, startOfToday, toDate, parseISO, format } from "date-fns";
 
-export const inboxList = []
-export const todayTasksList = []
-export const weekTasksList = []
-export const projectList = []
+export let inboxList = []
+export let todayTasksList = []
+export let weekTasksList = []
+export let projectList = []
 
 class Item {
     constructor(title, description, dueDate, priority, completedStatus, index) {
@@ -17,6 +17,7 @@ class Item {
         this.index = index
         this.toggleCompleteStatus = function() {
             this.completedStatus = this.completedStatus === "Completed" ? "Not Completed" : "Completed"
+            updateLocalStorage()
         }
     }
 
@@ -147,16 +148,71 @@ export function updateTodayAndWeekLists() {
     }
 }
 
-addProjectToProjectList("Homework")
-projectList[0].addItem("Math", "Chapter 3 Module 4", "2025-01-12", "High", "Not Completed", 0)
-projectList[0].addItem("English", "1984 Chapter 13", "2024-04-15", "High", "Not Completed", 0)
-addProjectToProjectList("Tests")
-projectList[1].addItem("Science Test", "Cell Anatomy", "2024-09-16", "High", "Not Completed", 1)
-projectList[1].addItem("Statistics Final", "Chapter 1 - 10", "2024-05-30", "High", "Not Completed", 1)
+function storageAvailable(type) {
+    let storage;
+    try {
+      storage = window[type];
+      const x = "__storage_test__";
+      storage.setItem(x, x);
+      storage.removeItem(x);
+      return true;
+    } catch (e) {
+      return (
+        e instanceof DOMException &&
+        e.name === "QuotaExceededError" &&
+        // acknowledge QuotaExceededError only if there's something already stored
+        storage &&
+        storage.length !== 0
+      );
+    }
+  }
 
-addItemToInbox("Laundry", "fold clothes", "2023-06-17", "Low", "Not Completed")
-addItemToInbox("Cook", "Lasagna", "2023-05-03", "Medium", "Completed")
+function addInitialTasks() {
+    if (storageAvailable("localStorage") && localStorage.length > 0) {
+        let storageInboxList = JSON.parse(localStorage.getItem("inboxList"))
+        let storageProjectList = JSON.parse(localStorage.getItem("projectList"))
+        
+        console.log(storageInboxList[0].title)
+        for (let i = 0; i < storageInboxList.length; i++) {
+            const storageItem = storageInboxList[i]
+            const item = new Item(storageItem.title, storageItem.description, storageItem.dueDate, storageItem.priority, storageItem.completedStatus, storageItem.index)
+            inboxList.push(item)
+        }
 
+        for (let i = 0; i < storageProjectList.length; i++) {
+            const storageProject = storageProjectList[i]
+            const project = new Project(storageProject.title, storageProject.index)
+            projectList.push(project)
+            
+            for (let j = 0; j < storageProject.itemList.length; j++) {
+                const storageItem = storageProject.itemList[j]
+                project.addItem(storageItem.title, storageItem.description, storageItem.dueDate, storageItem.priority, storageItem.completedStatus, storageProject.index)
+            }
+        }
+
+        return
+    }
+    addProjectToProjectList("Homework")
+    projectList[0].addItem("Math", "Chapter 3 Module 4", "2025-01-12", "High", "Not Completed", 0)
+    projectList[0].addItem("English", "1984 Chapter 13", "2024-04-15", "High", "Not Completed", 0)
+    addProjectToProjectList("Tests")
+    projectList[1].addItem("Science Test", "Cell Anatomy", "2024-09-16", "High", "Not Completed", 1)
+    projectList[1].addItem("Statistics Final", "Chapter 1 - 10", "2024-05-30", "High", "Not Completed", 1)
+    addItemToInbox("Laundry", "fold clothes", "2023-06-17", "Low", "Not Completed")
+    addItemToInbox("Cook", "Lasagna", "2023-05-03", "Medium", "Completed")
+}
+
+export function updateLocalStorage() {
+    localStorage.removeItem("inboxList")
+    localStorage.removeItem("projectList")
+
+    localStorage.setItem("inboxList", JSON.stringify(inboxList))
+    localStorage.setItem("projectList", JSON.stringify(projectList))
+
+    console.log(localStorage)
+}
+
+// localStorage.clear()
+addInitialTasks()
 initialize()
 updateMainScreen(inboxList, "Inbox")
-console.log(startOfToday())

@@ -1,9 +1,8 @@
 import { select, create, editText, addClass, removeClass, append, capitalize, insert, addId, editValue, getId } from "./domFunctions"
-import { inboxList, todayTasksList, weekTasksList, projectList, noteList, addItemToInbox, addProjectToProjectList, updateTodayAndWeekLists } from "./index.js"
+import { inboxList, todayTasksList, weekTasksList, projectList, noteList, addItemToInbox, addProjectToProjectList, updateTodayAndWeekLists, updateLocalStorage } from "./index.js"
 import checkedSvg from "./assets/checked.svg"
 import detailsSvg from "./assets/details.svg"
 import editSvg from "./assets/edit.svg"
-import filterdescSvg from "./assets/filterdesc.svg"
 import menuImageSvg from "./assets/menu.svg"
 import plusOnlySvg from "./assets/plusOnly.svg"
 import plusWithCircleSvg from "./assets/plusWithCircle.svg"
@@ -48,6 +47,7 @@ export function initialize() {
 }
 
 export function updateSideBar(projectList) {
+    updateLocalStorage()
     const projectNavContainer = select(".projectNavContainer")
     projectNavContainer.innerHTML = ""
     projectList.forEach((project, index) => {
@@ -71,6 +71,7 @@ export function updateSideBar(projectList) {
 }
 
 export function updateMainScreen(list, title) {
+    updateLocalStorage()
     const mainScreen = select("#mainScreen")
     mainScreen.innerHTML = ""
 
@@ -106,7 +107,8 @@ export function updateMainScreen(list, title) {
             addId(rowTitle, `projectTitle-${index}`)
             addClass(rowTitle, `projectTitle`)
             rowTitle.addEventListener("click", () => {
-                const projectIndex = getId(rowTitle).split("-")[3]
+                const projectIndex = getId(rowTitle).split("-")[1]
+                console.log(projectIndex)
                 const project = projectList[projectIndex]
                 const projectItems = project.getItems
                 updateMainScreen(projectItems, project.getTitle)
@@ -288,29 +290,49 @@ function seeDetails(item) {
     editText(titleText, item.getTitle)
     append(textContainer, titleText)
 
-    const dueDateText = create("div")
-    addClass(dueDateText, "dueDateText")
-    addClass(dueDateText, `detailsWindowText`)
-    editText(dueDateText, `Due Date: ${item.UIDueDate}`)
-    append(textContainer, dueDateText)
+    const dueDateLabel = create("div")
+    addClass(dueDateLabel, `detailsWindowText`)
+    editText(dueDateLabel, `Due Date: `)
+    dueDateLabel.style.fontWeight = "bold"
+    append(textContainer, dueDateLabel)
 
-    const priorityText = create("div")
-    addClass(priorityText, "priorityText")
-    addClass(priorityText, `detailsWindowText`)
-    editText(priorityText, `Priority: ${item.getPriority}`)
-    append(textContainer, priorityText)
+    const dueDateText = create("span")
+    editText(dueDateText, `${item.UIDueDate}`)
+    dueDateText.style.fontWeight = "normal"
+    append(dueDateLabel, dueDateText)
 
-    const completedStatusText = create("div")
-    addClass(completedStatusText, "completedStatusText")
-    addClass(completedStatusText, `detailsWindowText`)
-    editText(completedStatusText, `Completed Status: ${item.getCompletedStatus}`)
-    append(textContainer, completedStatusText)
+    const priorityLabel = create("div")
+    addClass(priorityLabel, `detailsWindowText`)
+    editText(priorityLabel, `Priority: `)
+    priorityLabel.style.fontWeight = "bold"
+    append(textContainer, priorityLabel)
 
-    const descText = create("div")
-    addClass(descText, "descText")
-    addClass(descText, `detailsWindowText`)
-    editText(descText, `Description: ${item.getDescription}`)
-    append(textContainer, descText)
+    const priorityText = create("span")
+    editText(priorityText, `${item.getPriority}`)
+    priorityText.style.fontWeight = "normal"
+    append(priorityLabel, priorityText)
+
+    const completedStatusLabel = create("div")
+    addClass(completedStatusLabel, `detailsWindowText`)
+    editText(completedStatusLabel, `Completed Status: `)
+    completedStatusLabel.style.fontWeight = "bold"
+    append(textContainer, completedStatusLabel)
+
+    const completedStatusText = create("span")
+    editText(completedStatusText, `${item.getCompletedStatus}`)
+    completedStatusText.style.fontWeight = "normal"
+    append(completedStatusLabel, completedStatusText)
+
+    const descLabel = create("div")
+    addClass(descLabel, `detailsWindowText`)
+    editText(descLabel, `Description: `)
+    descLabel.style.fontWeight = "bold"
+    append(textContainer, descLabel)
+
+    const descText = create("span")
+    editText(descText, `${item.getDescription}`)
+    descText.style.fontWeight = "normal"
+    append(descLabel, descText)
 
 }
 
