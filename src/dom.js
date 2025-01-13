@@ -432,153 +432,92 @@ function editTask(e, item) {
 
 function addTaskWindow() {
 
-    const body = select("body")
-    const window = create("dialog")
-    addClass(window, "addTaskWindow")
-    addClass(window, "window")
-    append(body, window)
+    const window = createUIItem("window", "dialog", ["addTaskWindow"], select("body"))
     window.showModal()
 
-    const exitButton = create("div")
-    addClass(exitButton, `exitButton`)
-    append(window, exitButton)
+    createUIItem("exitButton", "div", [], window) // empty so that grid is consistent
 
-    const formContainer = create("form")
-    addClass(formContainer, `addTaskFormContainer`)
-    append(window, formContainer)
+    const formContainer = createUIItem("addTaskFormContainer", "form", [], window)
 
-    const titleText = create("div")
-    addClass(titleText, "titleText")
+    const titleText = createUIItem("titleText", "div", [], formContainer)
     editText(titleText, "Add Task")
-    append(formContainer, titleText)
 
     // task title
-    const inputRowContainer = create("div")
-    addClass(inputRowContainer, "inputRowContainer")
-    append(formContainer, inputRowContainer)
+    const inputRowContainer = createUIItem("inputRowContainer", "div", [], formContainer)
 
-    const inputTaskLabel = create("span")
-    addClass(inputTaskLabel, "inputTaskLabel")
-    addClass(inputTaskLabel, "label")
+    const inputTaskLabel = createUIItem("inputTaskLabel", "span", ["label"], inputRowContainer)
     editText(inputTaskLabel, "Task Name:")
-    append(inputRowContainer, inputTaskLabel)
 
-    const inputTaskName = create('input')
-    addClass(inputTaskName, "input")
-    addClass(inputTaskName, "inputTaskName")
+
+    const inputTaskName = createUIItem("inputTaskName", "input", ["input"], inputRowContainer)
     inputTaskName.type = 'text'
     inputTaskName.name = 'taskName'
     inputTaskName.placeholder = 'Task Name'
-    append(inputRowContainer, inputTaskName)
 
     // description
-    const inputRowContainer2 = create("div")
-    addClass(inputRowContainer2, "inputRowContainer")
-    append(formContainer, inputRowContainer2)
+    const inputRowContainer2 = createUIItem("inputRowContainer", "div", [], formContainer)
 
-    const inputDescLabel = create("span")
-    addClass(inputDescLabel, "inputDescLabel")
-    addClass(inputDescLabel, "label")
+    const inputDescLabel = createUIItem("inputDescLabel", "span", ["label"], inputRowContainer2)
     editText(inputDescLabel, "Task Description:")
-    append(inputRowContainer2, inputDescLabel)
 
-    const inputDesc = create('textarea')
-    addClass(inputDesc, "textArea")
-    addClass(inputDesc, "inputTaskDesc")
+    const inputDesc = createUIItem("inputDesc", "textarea", ["textArea", "inputTaskDesc"], inputRowContainer2)
     inputDesc.name = 'taskDesc'
     inputDesc.placeholder = 'Task Description'
     inputDesc.rows ="3"
     inputDesc.cols = "25"
-    append(inputRowContainer2, inputDesc)
 
     // due date
-    const inputRowContainer3 = create("div")
-    addClass(inputRowContainer3, "inputRowContainer")
-    append(formContainer, inputRowContainer3)
+    const inputRowContainer3 = createUIItem("inputRowContainer", "div", [], formContainer)
 
-    const inputDueDateLabel = create("span")
-    addClass(inputDueDateLabel, "inputDueDateLabel")
-    addClass(inputDueDateLabel, "label")
+    const inputDueDateLabel = createUIItem("inputDueDateLabel", "span", ["label"], inputRowContainer3)
     editText(inputDueDateLabel, "Task Due Date:")
-    append(inputRowContainer3, inputDueDateLabel)
 
-    const inputDueDate = create('input')
-    addClass(inputDueDate, "input")
-    addClass(inputDueDate, "inputDueDate")
+    const inputDueDate = createUIItem("inputDueDate", "input", ["input"], inputRowContainer3)
     inputDueDate.type = 'date'
     inputDueDate.name = 'taskDueDate'
     inputDueDate.placeholder = 'Due Date'
-    append(inputRowContainer3, inputDueDate)
 
     // priority dropdown
-    const inputPriority = create('div');
-    addClass(inputPriority, "inputPriority")
-    append(formContainer, inputPriority)
+    const inputPriority = createUIItem("inputPriority", "div", [], formContainer)
 
-    const inputPriorityLabel = create("span")
-    addClass(inputPriorityLabel, "inputPriorityLabel")
+    const inputPriorityLabel = createUIItem("inputPriorityLabel", "span", [], inputPriority)
     editText(inputPriorityLabel, "Priority:")
-    append(inputPriority, inputPriorityLabel)
 
-    const priorityList = create("select")
-    addClass(priorityList, "priorityList")
-    addClass(priorityList, "list")
+    const priorityList = createUIItem("priorityList", "select", ["list"], inputPriority)
     priorityList.name = "Priority"
-    append(inputPriority, priorityList)
 
-    const priorityLow = create("option")
-    editValue(priorityLow, "Low")
-    editText(priorityLow, "Low")
-    append(priorityList, priorityLow)
-
-    const priorityMed = create("option")
-    editValue(priorityMed, "Medium")
-    editText(priorityMed, "Medium")
-    append(priorityList, priorityMed)
-
-    const priorityHigh = create("option")
-    editValue(priorityHigh, "High")
-    editText(priorityHigh, "High")
-    append(priorityList, priorityHigh)
+    const priorityLevels = ["Low", "Medium", "High"]
+    for (let i = 0; i < priorityLevels.length; i++) {
+        const priorityLevel = priorityLevels[i]
+        const item = createUIItem(priorityLevel, "option", [], priorityList)
+        editValue(item, priorityLevel)
+        editText(item, priorityLevel)
+    }
 
     // category dropdown
-    const inputCategory = create('div');
-    addClass(inputCategory, "inputCategory")
-    append(formContainer, inputCategory)
+    const inputCategory = createUIItem("inputCategory", "div", [], formContainer)
 
-    const inputCategoryLabel = create("span")
-    addClass(inputCategoryLabel, "inputCategoryLabel")
-    editText(inputCategoryLabel, "Category:")
-    append(inputCategory, inputCategoryLabel)
+    const inputCategoryLabel = createUIItem("inputCategoryLabel", "span", [], inputCategory)
+    editText(inputCategoryLabel, "Category: ")
 
-    const categoryList = create("select")
-    addClass(categoryList, "categoryList")
-    addClass(categoryList, "list")
+    const categoryList = createUIItem("categoryList", "select", ["list"], inputCategory)
     categoryList.name = "Category"
-    append(inputCategory, categoryList)
 
-    const inbox = create("option")
+    const inbox = createUIItem("inboxCategory", "option", [], categoryList)
     editValue(inbox, "Inbox")
     editText(inbox, "Inbox")
-    append(categoryList, inbox)
 
     projectList.forEach((project) => {
-        const choice = create("option")
+        const choice = createUIItem("choiceCategory", "option", [], categoryList)
         editValue(choice, `projectIndex-${project.getIndex}-${project.getTitle}`)
         editText(choice, `${project.getTitle}`)
-        append(categoryList, choice)
     })
 
     // Add and Cancel Button
-    const buttonContainer = create("div")
-    addClass(buttonContainer, "buttonContainer")
-    append(formContainer, buttonContainer)
+    const buttonContainer = createUIItem("buttonContainer", "div", [], formContainer)
 
-    const addButton = create("div")
-    addClass(addButton, "addButton")
-    addClass(addButton, "button")
+    const addButton = createUIItem("addButton", "div", ["button"], buttonContainer)
     editText(addButton, "Add Task")
-    append(buttonContainer, addButton)
 
     addButton.addEventListener("click", function addItem() {
 
@@ -592,9 +531,12 @@ function addTaskWindow() {
         editText(asterisk, "*")
 
         if (name === "") {
-            if (inputTaskLabel.childNodes.length > 1 === true) {
+    
+            // makes sure no more than one asterisk
+            if (inputTaskLabel.childNodes.length > 1 === true) { 
                 return
             }
+
             append(inputTaskLabel, asterisk)
             asterisk.style.color = "red"
             inputTaskName.style.border = "2px solid red"
@@ -605,9 +547,12 @@ function addTaskWindow() {
         inputTaskName.style.border = ""
 
         if (dueDate === "") {
+
+            // makes sure no more than one asterisk
             if (inputDueDateLabel.childNodes.length > 1 === true) {
                 return
             }
+
             append(inputDueDateLabel, asterisk)
             asterisk.style.color = "red"
             inputDueDate.style.border = "2px solid red"
@@ -634,11 +579,8 @@ function addTaskWindow() {
         }
     })
 
-    const cancelButton = create("div")
-    addClass(cancelButton, "cancelButton")
-    addClass(cancelButton, "button")
+    const cancelButton = createUIItem("cancelButton", "div", ["button"], buttonContainer)
     editText(cancelButton, "Cancel")
-    append(buttonContainer, cancelButton)
 
     cancelButton.addEventListener("click", () => {
         window.remove()
@@ -736,3 +678,19 @@ function findProject(projectName) {
         }
     }
 }
+
+function createUIItem(stringTitle, typeOfElement, arrayOfExtraClasses, appendingParent) {
+    const item = create(typeOfElement)
+
+    addClass(item, stringTitle)
+    if (arrayOfExtraClasses.length > 0) {
+        for (let i = 0; i < arrayOfExtraClasses.length; i++) {
+            addClass(item, arrayOfExtraClasses[i])
+        }
+    }
+
+    append(appendingParent, item)
+
+    return item
+}
+    
