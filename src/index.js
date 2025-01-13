@@ -203,13 +203,13 @@ function addInitialTasks() {
 }
 
 export function updateLocalStorage() {
-    localStorage.removeItem("inboxList")
-    localStorage.removeItem("projectList")
+    if (storageAvailable("localStorage")) {
+        localStorage.removeItem("inboxList")
+        localStorage.removeItem("projectList")
 
-    localStorage.setItem("inboxList", JSON.stringify(inboxList))
-    localStorage.setItem("projectList", JSON.stringify(projectList))
-
-    console.log(localStorage)
+        localStorage.setItem("inboxList", JSON.stringify(inboxList))
+        localStorage.setItem("projectList", JSON.stringify(projectList))
+    }
 }
 
 // localStorage.clear()

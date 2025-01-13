@@ -1,5 +1,5 @@
-import { select, create, editText, addClass, removeClass, append, capitalize, insert, addId, editValue, getId } from "./domFunctions"
-import { inboxList, todayTasksList, weekTasksList, projectList, noteList, addItemToInbox, addProjectToProjectList, updateTodayAndWeekLists, updateLocalStorage } from "./index.js"
+import { select, create, editText, addClass, append, capitalize, insert, addId, editValue, getId } from "./domFunctions"
+import { inboxList, todayTasksList, weekTasksList, projectList, addItemToInbox, addProjectToProjectList, updateTodayAndWeekLists, updateLocalStorage } from "./index.js"
 import checkedSvg from "./assets/checked.svg"
 import detailsSvg from "./assets/details.svg"
 import editSvg from "./assets/edit.svg"
