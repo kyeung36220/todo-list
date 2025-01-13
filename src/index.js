@@ -8,7 +8,7 @@ export let weekTasksList = []
 export let projectList = []
 
 class Item {
-    constructor(title, description, dueDate, priority, completedStatus, index) {
+    constructor(title, description, dueDate, priority, completedStatus, index, originProject) {
         this.title = title
         this.description = description
         this.dueDate = dueDate
@@ -19,6 +19,7 @@ class Item {
             this.completedStatus = this.completedStatus === "Completed" ? "Not Completed" : "Completed"
             updateLocalStorage()
         }
+        this.originProject = originProject
     }
 
     get getTitle() {
@@ -47,6 +48,10 @@ class Item {
 
     get getIndex() {
         return this.index
+    }
+
+    get getOriginProject() {
+        return this.originProject
     }
 
     set changeTitle(newTitle) {
@@ -86,13 +91,14 @@ class Project {
     }
 
     addItem(title, description, dueDate, priority, completedStatus, listIndex) {
-        let item = new Item(title, description, dueDate, priority, completedStatus, getProjectItemListLength(listIndex))
+        let originProject = this.title
+        let item = new Item(title, description, dueDate, priority, completedStatus, getProjectItemListLength(listIndex), originProject)
         this.itemList.push(item)
     }
 }
 
 export function addItemToInbox(title, description, dueDate, priority, completedStatus) {
-    const item = new Item(title, description, dueDate, priority, completedStatus, getInboxListLength())
+    const item = new Item(title, description, dueDate, priority, completedStatus, getInboxListLength(), "Inbox")
     inboxList.push(item)
 }
 
@@ -171,11 +177,10 @@ function addInitialTasks() {
     if (storageAvailable("localStorage") && localStorage.length > 0) {
         let storageInboxList = JSON.parse(localStorage.getItem("inboxList"))
         let storageProjectList = JSON.parse(localStorage.getItem("projectList"))
-        
-        console.log(storageInboxList[0].title)
+    
         for (let i = 0; i < storageInboxList.length; i++) {
             const storageItem = storageInboxList[i]
-            const item = new Item(storageItem.title, storageItem.description, storageItem.dueDate, storageItem.priority, storageItem.completedStatus, storageItem.index)
+            const item = new Item(storageItem.title, storageItem.description, storageItem.dueDate, storageItem.priority, storageItem.completedStatus, storageItem.index, "Inbox")
             inboxList.push(item)
         }
 
@@ -212,7 +217,6 @@ export function updateLocalStorage() {
     }
 }
 
-// localStorage.clear()
 addInitialTasks()
 initialize()
 updateMainScreen()

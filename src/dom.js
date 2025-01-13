@@ -37,6 +37,12 @@ export function initialize() {
     const headerTitle = createUIItem("headerTitle", "div", [], header)
     editText(headerTitle, "todo")
 
+    headerTitle.addEventListener("click", () => {
+        localStorage.clear()
+        location.reload()
+
+    })
+
     addSideBar()
 }
 
@@ -74,7 +80,7 @@ export function updateMainScreen() {
     let title
 
     if (["Inbox", "Today", "Week", "Projects"].includes(currentPage) === false) {
-        const project = findProject(currentPage)
+        const project = findProjectThroughProjectName(currentPage)
         list = project.getItems
         title = project.getTitle
         projectIndex = project.getIndex
@@ -86,7 +92,7 @@ export function updateMainScreen() {
         projectIndex = project.getIndex
     }
     else {
-        list = findProject(currentPage)
+        list = findProjectThroughProjectName(currentPage)
         title = currentPage
         projectIndex = currentPage
     }
@@ -97,7 +103,7 @@ export function updateMainScreen() {
     list.forEach((item, index) => {
         const rowContainer = createUIItem("rowContainer", "div", [], mainScreen)
         addId(rowContainer, `project-${projectIndex}-itemIndex-${index}`)
-    
+
         //text
         const rowTitle = createUIItem("rowTitle", "div", [], rowContainer)
         editText(rowTitle, `${item.getTitle}`)
@@ -230,6 +236,10 @@ function createIcons(parent, title, item, list) {
     trash.addEventListener("click", () => {
         const rowId= trash.parentElement.parentElement.getAttribute("id")
         const rowIndex = rowId.split("-")[3]
+        if (["Today", "Week"].includes(currentPage)) {
+            const originalProject = findProjectThroughProjectName(item.getOriginProject)
+            originalProject.getItems.splice(rowIndex, 1)
+        }
         list.splice(rowIndex, 1)
         updateMainScreen()
         updateSideBar(projectList)
@@ -289,7 +299,8 @@ function seeDetails(item) {
 
 function editTask(e, item) {
     addTaskWindow()
-    const itemIndex = getId(e.target.parentElement.parentElement).split("-")[1]
+    const itemIndex = getId(e.target.parentElement.parentElement).split("-")[3]
+    const projectIndex = getId(e.target.parentElement.parentElement).split("-")[1]
     const window = select(".window")
     const titleText = select(".titleText")
     const inputTaskName = select(".inputTaskName")
@@ -312,8 +323,6 @@ function editTask(e, item) {
         }
     }
 
-    const project = findProject(currentPage)
-    const projectIndex = project.getIndex
     for (let option of categoryList.options) {
         if (option.value.split("-")[1] == projectIndex) {
             option.selected = true
@@ -334,27 +343,29 @@ function editTask(e, item) {
         item.changePriority = priorityList.value
 
         if (categoryList.value != currentPage) {
-            if (currentPage === "Inbox") {
+
+            // deleting item
+            if (["Inbox"].includes(currentPage)) {
                 inboxList.splice(itemIndex, 1)
+            }
+            else if (["Today", "Week"].includes(currentPage)) {
+                findProjectThroughProjectName(item.originProject).getItems.splice(itemIndex, 1)
             }
             else {
                 projectList[projectIndex].getItems.splice(itemIndex, 1)
             }
+
+            // adding item
             if (categoryList.value === "Inbox") {
                 inboxList.push(item)
             }
             else {
-                const newProject = findProject(categoryList.value.split("-")[2])
+                const newProject = findProjectThroughProjectName(categoryList.value.split("-")[2])
                 newProject.addItem(item.getTitle, item.getDescription, item.getDueDate, item.getPriority, "Not Completed", newProject.getIndex)
             }
         }
 
-        if (currentPage === "Inbox"){
-            updateMainScreen()
-        }
-        else {
-            updateMainScreen()
-        }
+        updateMainScreen()
         window.remove()
         
     })
@@ -577,7 +588,7 @@ function addProjectAddButtonFunctionality() {
     })
 }
 
-function findProject(projectName) {
+function findProjectThroughProjectName(projectName) {
 
     if (projectName === "Inbox") {
         return inboxList
