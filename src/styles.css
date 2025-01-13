@@ -115,7 +115,7 @@ body {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  padding: clamp(35px, 35px, 4vh) clamp(10px,10px,1vw) 0px clamp(10px,10px,1vw);
+  padding: clamp(35px, 35px, 4vh) clamp(40px,40px,3vw) 0px clamp(10px,10px,1vw);
   gap: 0.5vh;
   color: white;
 }
@@ -166,16 +166,25 @@ body {
   display: flex;
   align-items: center;
   margin-left: 50px;
-  padding-right: 0px
+  padding-right: 0px;
 }
 
 #projectNavInputContainer:hover {
   background-color: #B4846C;
 }
 
-.checkmark {
+.iconContainer {
   height: 30px;
   margin-left: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.checkmark {
+  height: 30px;
   filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(49deg) brightness(103%) contrast(103%);
 }
 
@@ -184,10 +193,20 @@ body {
   filter: brightness(0) saturate(100%) invert(32%) sepia(86%) saturate(2131%) hue-rotate(131deg) brightness(101%) contrast(101%);
 }
 
+.xIcon {
+  height: 15px;
+  filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(49deg) brightness(103%) contrast(103%);
+}
+
+.xIcon:hover {
+  cursor: pointer;
+  filter: brightness(0) saturate(100%) invert(18%) sepia(98%) saturate(7484%) hue-rotate(6deg) brightness(102%) contrast(117%);
+}
+
 #projectNavInputContainer .nameInput {
   border-radius: 50px;
   border-style: solid;
-  width: 130px;
+  width: 170px;
   font-size: 1.5rem;
 }
 

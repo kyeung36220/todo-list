@@ -1,5 +1,5 @@
 import { select, create, editText, addClass, removeClass, append, capitalize, insert, addId, editValue, getId } from "./domFunctions"
-import { inboxList, todayTasksList, weekTasksList, projectList, noteList, addItemToInbox, addProjectToProjectList } from "./index.js"
+import { inboxList, todayTasksList, weekTasksList, projectList, noteList, addItemToInbox, addProjectToProjectList, updateTodayAndWeekLists } from "./index.js"
 import checkedSvg from "./assets/checked.svg"
 import detailsSvg from "./assets/details.svg"
 import editSvg from "./assets/edit.svg"
@@ -26,7 +26,7 @@ export function initialize() {
         if (sideBar.innerHTML === "") {
             body.style.gridTemplateColumns = "1fr 4fr"
             body.style.gridTemplateAreas = "'header header''sideBar mainScreen'"
-            sideBar.style.padding = "clamp(35px, 35px, 4vh) clamp(10px,10px,1vw) 0px clamp(10px,10px,1vw)"
+            sideBar.style.padding = "clamp(35px, 35px, 4vh) clamp(60px,60px,5vw) 0px clamp(10px,10px,1vw)"
             addSideBar()
             return
         }
@@ -84,7 +84,6 @@ export function updateMainScreen(list, title) {
 
     let projectIndex = findProject(currentPage).getIndex
 
-
     const listTitle = create("div")
     addClass(listTitle, "listTitle")
     editText(listTitle, title)
@@ -121,7 +120,7 @@ export function updateMainScreen(list, title) {
         })
     
         const rowDueDate = create("div")
-        editText(rowDueDate, `${item.getDueDate}`)
+        editText(rowDueDate, `${item.UIDueDate}`)
         addClass(rowDueDate, "rowDueDate")
         append(rowContainer, rowDueDate)
 
@@ -153,6 +152,7 @@ function addSideBarButtonFunctionality() {
 
     const todayButton = select(".todayNav")
     todayButton.addEventListener("click", () => {
+        updateTodayAndWeekLists()
         currentPage = "Today"
         updateMainScreen(todayTasksList, currentPage)
         return
@@ -161,6 +161,7 @@ function addSideBarButtonFunctionality() {
 
     const weekButton = select(".weekNav")
     weekButton.addEventListener("click", () => {
+        updateTodayAndWeekLists()
         currentPage = "Week"
         updateMainScreen(weekTasksList, currentPage)
         return
@@ -253,7 +254,7 @@ function createIcons(parent, title, item, list) {
 
     trash.addEventListener("click", () => {
         const rowId= trash.parentElement.parentElement.getAttribute("id")
-        const rowIndex = rowId.split("-")[1]
+        const rowIndex = rowId.split("-")[3]
         list.splice(rowIndex, 1)
         updateMainScreen(list, title)
         updateSideBar(projectList)
@@ -290,7 +291,7 @@ function seeDetails(item) {
     const dueDateText = create("div")
     addClass(dueDateText, "dueDateText")
     addClass(dueDateText, `detailsWindowText`)
-    editText(dueDateText, `Due Date: ${item.getDueDate}`)
+    editText(dueDateText, `Due Date: ${item.UIDueDate}`)
     append(textContainer, dueDateText)
 
     const priorityText = create("div")
@@ -575,7 +576,7 @@ function addTaskWindow() {
         inputDueDateLabel.style.color = "white"
         inputDueDate.style.border = ""
         
-        if (category === "inbox") {
+        if (category === "Inbox") {
             addItemToInbox(name, description, dueDate, priority, "Not Completed")
             updateMainScreen(inboxList, "Inbox")
             window.remove()
@@ -613,18 +614,31 @@ function addProjectAddButtonFunctionality() {
 
     const nameInput = create("input")
     addClass(nameInput, `nameInput`)
+    nameInput.placeholder = "Project Name"
     append(inputContainer, nameInput)
+
+    const iconContainer = create("div")
+    addClass(iconContainer, "iconContainer")
+    append(inputContainer, iconContainer)
 
     const checkmark = create("img")
     addClass(checkmark, `checkmark`)
     checkmark.src = checkmarkSvg
-    append(inputContainer, checkmark)
+    append(iconContainer, checkmark)
 
     checkmark.addEventListener("click", () => {
         if (nameInput.value === "") {
             inputContainer.remove()
             return
         }
+
+        else if (nameInput.value.length > 15) {
+            alert("Project Name can not be over 15 characters")
+            nameInput.value = ""
+            return
+        }
+
+        console.log(nameInput.length)
 
         const newProjectName = nameInput.value
         addProjectToProjectList(newProjectName)
@@ -636,6 +650,15 @@ function addProjectAddButtonFunctionality() {
         }
 
     })
+
+    const xIcon = create("img")
+    addClass(xIcon, `xIcon`)
+    xIcon.src = exitButtonSvg
+    append(iconContainer, xIcon)
+
+    xIcon.addEventListener("click", () => {
+        inputContainer.remove()
+    })
 }
 
 function findProject(projectName) {
@@ -644,6 +667,12 @@ function findProject(projectName) {
         return projectName
     }
     else if (projectName === "Projects") {
+        return projectName
+    }
+    else if (projectName === "Today") {
+        return projectName
+    }
+    else if (projectName === "Week") {
         return projectName
     }
 

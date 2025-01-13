@@ -1,5 +1,6 @@
 import "./styles.css";
 import { initialize, updateSideBar, updateMainScreen } from "./dom.js"
+import { isToday, isThisWeek, startOfToday, toDate, parseISO, format } from "date-fns";
 
 export const inboxList = []
 export const todayTasksList = []
@@ -29,6 +30,10 @@ class Item {
 
     get getDueDate() {
         return this.dueDate
+    }
+
+    get UIDueDate() {
+        return format(parseISO(this.dueDate), "MM/dd/yyyy")
     }
 
     get getPriority() {
@@ -107,15 +112,51 @@ function getProjectItemListLength(index) {
     return projectList[index].getItems.length
 }
 
+export function updateTodayAndWeekLists() {
+    while (todayTasksList.length > 0) {
+        todayTasksList.pop()
+    }
+
+    while (weekTasksList.length > 0) {
+        weekTasksList.pop()
+    }
+
+    for (let i = 0; i < inboxList.length; i++) {
+        const item = inboxList[i]
+        const dueDate = format(parseISO(item.getDueDate), "MM/dd/yyyy")
+
+        if (isToday(dueDate)) {
+            todayTasksList.push(item)
+        }
+        if (isThisWeek(dueDate)) {
+            weekTasksList.push(item)
+        }
+    }
+
+    for (let i = 0; i < projectList.length; i++) {
+        for(let j = 0; j < projectList[i].getItems.length; j++) {
+            const item = projectList[i].getItems[j]
+            const dueDate = format(parseISO(item.getDueDate), "MM/dd/yyyy")
+            if (isToday(dueDate)) {
+                todayTasksList.push(item)
+            }
+            if (isThisWeek(dueDate)) {
+                weekTasksList.push(item)
+            }
+        }
+    }
+}
+
 addProjectToProjectList("Homework")
-projectList[0].addItem("Math", "Chapter 3 Module 4", "2024-05-03", "High", "Not Completed", 0)
+projectList[0].addItem("Math", "Chapter 3 Module 4", "2025-01-12", "High", "Not Completed", 0)
 projectList[0].addItem("English", "1984 Chapter 13", "2024-04-15", "High", "Not Completed", 0)
 addProjectToProjectList("Tests")
 projectList[1].addItem("Science Test", "Cell Anatomy", "2024-09-16", "High", "Not Completed", 1)
-projectList[1].addItem("Statistics Final", "Chapter 1 - 10", "2024-5-30", "High", "Not Completed", 1)
+projectList[1].addItem("Statistics Final", "Chapter 1 - 10", "2024-05-30", "High", "Not Completed", 1)
 
 addItemToInbox("Laundry", "fold clothes", "2023-06-17", "Low", "Not Completed")
 addItemToInbox("Cook", "Lasagna", "2023-05-03", "Medium", "Completed")
 
 initialize()
 updateMainScreen(inboxList, "Inbox")
+console.log(startOfToday())
