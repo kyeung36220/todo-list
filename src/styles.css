@@ -61,6 +61,8 @@ h1, h2, h3, h4, h5, h6 {
   --primary-color: #7D5A50;
   --secondary-color: #B4846C;
   --font-color: #FCDEC0;
+  --background-color: #FCDEC0;
+  --shadow-color: #000000;
 }
 
 body {
@@ -85,7 +87,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0px -5px 12px rgb(0, 0, 0);
+  box-shadow: 0px -5px 12px var(--shadow-color);
+  min-height: 134px;
 }
 
 .menuImage {
@@ -117,7 +120,7 @@ body {
 #sideBar {
   grid-area: sideBar;
   background-color: var(--secondary-color);
-  box-shadow: -5px 0px 10px rgb(0, 0, 0);
+  box-shadow: -5px 0px 10px var(--shadow-color);
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -236,7 +239,7 @@ body {
 /* MAIN SCREEN */
 #mainScreen {
   grid-area: mainScreen;
-  background-color: var(--font-color);
+  background-color: var(--background-color);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -347,8 +350,8 @@ body {
 .sortContainer {
   display: flex;
   position: absolute;
-  top: 6vh;
-  right: 10vw;
+  top: 55px;
+  right: 150px;
   z-index: 3;
   font-size: 1rem;
   justify-content: center;
@@ -395,7 +398,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.555);
+  box-shadow: 2px 2px 5px 1px var(--shadow-color);
 }
 
 .exitButton {
@@ -553,4 +556,19 @@ dialog:focus {
 .editProjectNameWindow {
   justify-content: center;
   height: fit-content;
+}
+
+/* Light and Dark Mode */
+
+.lightDarkIcon {
+  position: absolute;
+  z-index: 3;
+  filter: brightness(0) saturate(100%) invert(94%) sepia(6%) saturate(0%) hue-rotate(97deg) brightness(106%) contrast(106%);
+  top: 40px;
+  left: 130px;
+}
+
+.lightDarkIcon:hover {
+  cursor: pointer;
+  filter: brightness(0) saturate(100%) invert(96%) sepia(65%) saturate(669%) hue-rotate(303deg) brightness(101%) contrast(98%);
 }

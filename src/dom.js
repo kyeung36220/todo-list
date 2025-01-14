@@ -2,6 +2,7 @@ import { select, create, editText, addClass, append, capitalize, insert, addId, 
 import { inboxList, todayTasksList, weekTasksList, projectList, addItemToInbox, addProjectToProjectList, updateTodayAndWeekLists, updateLocalStorage } from "./index.js"
 import checkedSvg from "./assets/checked.svg"
 import checkmarkSvg from "./assets/checkmark.svg"
+import dayAndNightPng from "./assets/dayAndNight.png"
 import detailsSvg from "./assets/details.svg"
 import editSvg from "./assets/edit.svg"
 import exitButtonSvg from "./assets/x.svg"
@@ -47,8 +48,8 @@ export function initialize() {
     })
 
     addSideBar()
-
     addSort()
+    addLightDark()
 }
 
 export function updateSideBar(projectList) {
@@ -955,4 +956,28 @@ function sort() {
         sortIcon.src = direction === "desc" ? sortDescPng : sortAscPng
         sortIcon.id = direction === "desc" ? "desc" : "asc"
     }
+}
+
+function addLightDark() {
+    const body = select("body")
+    const icon = createUIItem("lightDarkIcon", "img", [], body)
+    icon.src = dayAndNightPng
+
+    icon.addEventListener("click", () => {
+        const root = document.documentElement
+        const currentColor = getComputedStyle(root).getPropertyValue('--primary-color')
+
+        if (currentColor === "#7D5A50") {
+            root.style.setProperty('--primary-color', '#B4846C')
+            root.style.setProperty('--secondary-color', '#7D5A50')
+            root.style.setProperty('--background-color', '#221202')
+        }
+        else {
+            root.style.setProperty('--primary-color', '#7D5A50')
+            root.style.setProperty('--secondary-color', '#B4846C')
+            root.style.setProperty('--background-color', '#FCDEC0')
+        }
+
+
+    })
 }
