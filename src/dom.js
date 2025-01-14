@@ -66,6 +66,8 @@ export function updateSideBar(projectList) {
             const projectIndex = item.getAttribute("id").split("-")[1]
             currentPage = projectList[projectIndex].getTitle
             updateMainScreen()
+            select(".sortContainer").remove()
+            addSort()
         })
     })
 
