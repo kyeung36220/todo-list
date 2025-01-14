@@ -46,8 +46,9 @@ export function initialize() {
 
     })
 
-    addSort()
     addSideBar()
+
+    addSort()
 }
 
 export function updateSideBar(projectList) {
@@ -55,6 +56,7 @@ export function updateSideBar(projectList) {
 
     const projectNavContainer = select(".projectNavContainer")
     projectNavContainer.innerHTML = ""
+
     projectList.forEach((project, index) => {
         const item = createUIItem("projectNavChild", "div", [], projectNavContainer)
         editText(item, project.getTitle)
@@ -94,6 +96,20 @@ export function updateMainScreen() {
         list = project.getItems
         title = project.getTitle
         projectIndex = project.getIndex
+    }
+    else if (arguments[0] === "listSorted") {
+        if (["Inbox", "Today", "Week", "Projects"].includes(currentPage) === false) {
+            const project = findProjectThroughProjectName(currentPage)
+            list = arguments[1]
+            title = project.getTitle
+            projectIndex = project.getIndex
+            console.log(project)
+        }
+        else {
+            list = arguments[1]
+            title = currentPage
+            projectIndex = currentPage
+        }
     }
     else {
         list = findProjectThroughProjectName(currentPage)
@@ -167,6 +183,8 @@ function addSideBarButtonFunctionality() {
     inboxButton.addEventListener("click", () => {
         currentPage = "Inbox"
         updateMainScreen()
+        select(".sortContainer").remove()
+        addSort()
         return
     })
 
@@ -175,6 +193,8 @@ function addSideBarButtonFunctionality() {
         updateTodayAndWeekLists()
         currentPage = "Today"
         updateMainScreen()
+        select(".sortContainer").remove()
+        addSort()
         return
     })
 
@@ -184,6 +204,8 @@ function addSideBarButtonFunctionality() {
         updateTodayAndWeekLists()
         currentPage = "Week"
         updateMainScreen()
+        select(".sortContainer").remove()
+        addSort()
         return
     })
 
@@ -191,6 +213,8 @@ function addSideBarButtonFunctionality() {
     projectsButton.addEventListener("click", () => {
         currentPage = "Projects"
         updateMainScreen()
+        select(".sortContainer").remove()
+        addSort()
         return
     })
 }
@@ -753,27 +777,180 @@ function addSort() {
 
     const sortPlaceholder = createUIItem("sortOption", "option", ["placeholder"], sortDropdown)
     sortPlaceholder.textContent = "Select"
+    sortPlaceholder.value = "Select"
     sortPlaceholder.disabled = true
     sortPlaceholder.selected = true
     sortPlaceholder.hidden = true
 
-    const sortOptions = ["Name", "dueDate", "Priority"]
-    for (let i = 0; i < sortOptions.length; i++) {
-        const option = createUIItem("sortOption", "option", [sortOptions[i]], sortDropdown)
-        option.textContent = sortOptions[i]
+    let sortOptions
+    if (currentPage === "Projects") {
+        sortOptions = ["Name"]
+        for (let i = 0; i < sortOptions.length; i++) {
+            const option = createUIItem("sortOption", "option", [sortOptions[i]], sortDropdown)
+            option.textContent = sortOptions[i]
+            option.value = sortOptions[i]
+        }
     }
-    select(".dueDate").textContent = "Due Date"
+    else {
+        sortOptions = ["Name", "dueDate", "Priority"]
+        for (let i = 0; i < sortOptions.length; i++) {
+            const option = createUIItem("sortOption", "option", [sortOptions[i]], sortDropdown)
+            option.textContent = sortOptions[i]
+            option.value = sortOptions[i]
+        }
+        select(".dueDate").textContent = "Due Date"
+    }
 
     const sortIcon = createUIItem("sortIcon", "img", [], sortContainer)
     sortIcon.src = sortDescPng
+    addId(sortIcon, "desc")
 
     sortIcon.addEventListener("click", () => {
-        sortIcon.src = sortIcon.src === sortDescPng ? sortAscPng : sortDescPng
+        sortIcon.src = sortIcon.src  === sortDescPng ? sortAscPng : sortDescPng
+        sortIcon.id  = sortIcon.id === "desc" ? "asc" : "desc"
+        if (sortDropdown.value != "Select") {
+            sort()
+        }
     })
 
     sortDropdown.addEventListener("change", () => {
-        let tempList = []
-        const direction = sortIcon.src = "sortDescPng" ? "desc" : "asc"
-
+        sort()
     })
+}
+
+function sort() {
+    let tempList = []
+    const sortIcon = select(".sortIcon")
+    const sortDropdown = select(".sortDropdown")
+    const direction = sortIcon.getAttribute("id")
+    const sortCategory = sortDropdown.value
+    const list = findProjectThroughProjectName(currentPage)
+
+    if (sortCategory === "Name") {
+        for (let i = 0; i < list.length; i++) {
+            tempList.push(list[i])
+        }
+        if (direction === "desc") {
+            tempList.sort((a, b) => {
+                const nameA = a.getTitle.toUpperCase()
+                const nameB = b.getTitle.toUpperCase()
+                if (nameA < nameB) {
+                    return -1
+                }
+                if (nameA > nameB) {
+                    return 1
+                }
+
+                return 0
+            })
+        }
+        else if (direction === "asc") {
+            tempList.sort((a, b) => {
+                const nameA = a.getTitle.toUpperCase()
+                const nameB = b.getTitle.toUpperCase()
+                if (nameA < nameB) {
+                    return 1
+                }
+                if (nameA > nameB) {
+                    return -1
+                }
+                return 0
+            })
+        }
+
+        updateMainScreen("listSorted", tempList)
+        select(`.sortDropdown`).options[1].selected = true
+        sortIcon.src = direction === "desc" ? sortDescPng : sortAscPng
+        sortIcon.id = direction === "desc" ? "desc" : "asc"
+    }
+
+    else if (sortCategory === "dueDate") {
+        for (let i = 0; i < list.length; i++) {
+            tempList.push(list[i])
+        }
+
+        if (direction === "desc") {
+            tempList.sort((a, b) => {
+                const dateA = new Date(a.getDueDate).getTime()
+                const dateB = new Date(b.getDueDate).getTime()
+                if (dateA < dateB) {
+                    return -1
+                }
+                if (dateA > dateB) {
+                    return 1
+                }
+
+                return 0
+            })
+        }
+        else if (direction === "asc") {
+            tempList.sort((a, b) => {
+                const dateA = new Date(a.getDueDate).getTime()
+                const dateB = new Date(b.getDueDate).getTime()
+                if (dateA < dateB) {
+                    return 1
+                }
+                if (dateA > dateB) {
+                    return -1
+                }
+                return 0
+            })
+        }
+
+        updateMainScreen("listSorted", tempList)
+        select(`.sortDropdown`).options[2].selected = true
+        sortIcon.src = direction === "desc" ? sortDescPng : sortAscPng
+        sortIcon.id = direction === "desc" ? "desc" : "asc"
+    }
+
+    else if (sortCategory === "Priority") {
+        for (let i = 0; i < list.length; i++) {
+            tempList.push(list[i])
+        }
+
+        function changeToLevel(priority) {
+            if (priority === "Low") {
+                return 3
+            }
+            else if (priority === "Medium") {
+                return 2
+            }
+            else if (priority === "High") {
+                return 1
+            }
+        }
+
+        if (direction === "desc") {
+            tempList.sort((a, b) => {
+                const priorityA = changeToLevel(a.getPriority)
+                const priorityB = changeToLevel(b.getPriority)
+                if (priorityA < priorityB) {
+                    return -1
+                }
+                if (priorityA > priorityB) {
+                    return 1
+                }
+
+                return 0
+            })
+        }
+        else if (direction === "asc") {
+            tempList.sort((a, b) => {
+                const priorityA = new Date(a.getDueDate).getTime()
+                const priorityB = new Date(b.getDueDate).getTime()
+                if (priorityA < priorityB) {
+                    return 1
+                }
+                if (priorityA > priorityB) {
+                    return -1
+                }
+                return 0
+            })
+        }
+
+        updateMainScreen("listSorted", tempList)
+        select(`.sortDropdown`).options[3].selected = true
+        sortIcon.src = direction === "desc" ? sortDescPng : sortAscPng
+        sortIcon.id = direction === "desc" ? "desc" : "asc"
+    }
 }

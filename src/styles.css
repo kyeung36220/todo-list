@@ -347,12 +347,13 @@ body {
 .sortContainer {
   display: flex;
   position: absolute;
-  top: 17vh;
-  right: 5vw;
+  top: 6vh;
+  right: 10vw;
   z-index: 3;
   font-size: 1rem;
   justify-content: center;
   align-items: center;
+  color: white;
 }
 
 .sortDropdown {
@@ -365,11 +366,12 @@ body {
 
 .sortIcon {
   height: 30px;
+  filter: brightness(0) saturate(100%) invert(93%) sepia(7%) saturate(0%) hue-rotate(133deg) brightness(106%) contrast(107%);
 }
 
 .sortIcon:hover {
   cursor: pointer;
-  filter: brightness(0) saturate(100%) invert(38%) sepia(8%) saturate(1811%) hue-rotate(326deg) brightness(92%) contrast(83%);
+  filter: brightness(0) saturate(100%) invert(96%) sepia(65%) saturate(669%) hue-rotate(303deg) brightness(101%) contrast(98%);
 }
 
 /* WINDOW STUFF */
