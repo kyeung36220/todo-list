@@ -18,6 +18,7 @@ import uncheckedSvg from "./assets/unchecked.svg"
 let currentPage = "Inbox"
 
 export function initialize() {
+
     const body = select("body")
     const header = select("#header")
     const sideBar = select("#sideBar")
@@ -50,6 +51,23 @@ export function initialize() {
     addSideBar()
     addSort()
     addLightDark()
+
+    window.addEventListener('resize', () => {
+        const sideBar = select("#sideBar")
+        const headerTitle = select(".headerTitle")
+        if (window.innerWidth < 1061) {
+            sideBar.innerHTML = ""
+            body.style.gridTemplateColumns = "4fr"
+            body.style.gridTemplateAreas = "'header''mainScreen'"
+            sideBar.style.padding = "0"
+
+            editText(headerTitle, "")
+        }
+        else if (headerTitle.textContainer === ""){
+            editText(headerTitle, "todo")
+        }
+    })
+
 }
 
 export function updateSideBar(projectList) {
@@ -970,12 +988,14 @@ function addLightDark() {
         if (currentColor === "#7D5A50") {
             root.style.setProperty('--primary-color', '#B4846C')
             root.style.setProperty('--secondary-color', '#7D5A50')
-            root.style.setProperty('--background-color', '#221202')
+            root.style.setProperty('--background-color', '#3d2004')
+            root.style.setProperty('--font-hover', '#FCDEC0')
         }
         else {
             root.style.setProperty('--primary-color', '#7D5A50')
             root.style.setProperty('--secondary-color', '#B4846C')
             root.style.setProperty('--background-color', '#FCDEC0')
+            root.style.setProperty('--font-hover', '#7D5A50')
         }
 
 
