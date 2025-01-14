@@ -1,4 +1,4 @@
-import { select, create, editText, addClass, append, capitalize, insert, addId, editValue, getId } from "./domFunctions"
+import { select, create, editText, addClass, append, capitalize, insert, addId, editValue, getId, removeClass } from "./domFunctions"
 import { inboxList, todayTasksList, weekTasksList, projectList, addItemToInbox, addProjectToProjectList, updateTodayAndWeekLists, updateLocalStorage } from "./index.js"
 import checkedSvg from "./assets/checked.svg"
 import detailsSvg from "./assets/details.svg"
@@ -97,11 +97,13 @@ export function updateMainScreen() {
         projectIndex = currentPage
     }
 
-    const listTitle = createUIItem("listTitle", "div", [], mainScreen)
+    const listContainer = createUIItem("listContainer", "div", [], mainScreen)
+
+    const listTitle = createUIItem("listTitle", "div", [], listContainer)
     editText(listTitle, title)
 
     list.forEach((item, index) => {
-        const rowContainer = createUIItem("rowContainer", "div", [], mainScreen)
+        const rowContainer = createUIItem("rowContainer", "div", [], listContainer)
         addId(rowContainer, `project-${projectIndex}-itemIndex-${index}`)
 
         //text
@@ -112,6 +114,7 @@ export function updateMainScreen() {
         if (title === "Projects") {
             addId(rowTitle, `projectTitle-${index}`)
             addClass(rowTitle, `projectTitle`)
+            addClass(rowContainer, "projectListRowContainer")
 
             rowTitle.addEventListener("click", () => {
                 const projectIndex = getId(rowTitle).split("-")[1]
@@ -128,6 +131,15 @@ export function updateMainScreen() {
     
         const rowDueDate = createUIItem("rowDueDate", "div", [], rowContainer)
         editText(rowDueDate, `${item.UIDueDate}`)
+        if (item.getPriority === "Low") {
+            rowDueDate.style.border = "4px solid rgb(1, 196, 1)"
+        }
+        else if (item.getPriority === "Medium") {
+            rowDueDate.style.border = "4px solid rgb(216, 224, 1)"
+        }
+        else if (item.getPriority === "High") {
+            rowDueDate.style.border = "4px solid rgb(224, 1, 1)"
+        }
 
         //checkbox
         const checkBox = createUIItem("checkBox", "img", ["rowIcon"], "")
@@ -137,6 +149,7 @@ export function updateMainScreen() {
         checkBox.addEventListener("click", () => {
             item.toggleCompleteStatus()
             checkBox.src = item.getCompletedStatus === "Completed" ? checkedSvg : uncheckedSvg
+            rowTitle.style.textDecoration = item.getCompletedStatus === "Completed" ? "line-through" : ""
         })
 
         //icons
@@ -226,8 +239,15 @@ function createIcons(parent, title, item, list) {
 
         edit.addEventListener("click", (e) => {
             editTask(e, item)
-        })
+    })
+    }
+    else {
+        const edit = createUIItem("editIcon", "img", ["rowIcon"], iconList)
+        edit.src = editSvg
 
+        edit.addEventListener("click", (e) => {
+            editProject(e, item)
+    })
     }
 
     const trash = createUIItem("trashIcon", "img", ["rowIcon"], iconList)
@@ -278,6 +298,15 @@ function seeDetails(item) {
     const priorityText = createUIItem(``, "span", [], priorityLabel)
     editText(priorityText, `${item.getPriority}`)
     priorityText.style.fontWeight = "normal"
+    if (item.getPriority === "Low") {
+        priorityText.style.color = "rgb(0, 132, 0)"
+    }
+    else if (item.getPriority === "Medium") {
+        priorityText.style.color = "rgb(216, 224, 1)"
+    }
+    else if (item.getPriority === "High") {
+        priorityText.style.color = "rgb(224, 1, 1)"
+    }
 
     const completedStatusLabel = createUIItem(`detailsWindowText`, "div", [], textContainer)
     editText(completedStatusLabel, `Completed Status: `)
@@ -286,6 +315,13 @@ function seeDetails(item) {
     const completedStatusText = createUIItem(``, "span", [], completedStatusLabel)
     editText(completedStatusText, `${item.getCompletedStatus}`)
     completedStatusText.style.fontWeight = "normal"
+    if (item.getCompletedStatus === "Not Completed") {
+        completedStatusText.style.color = "rgb(224, 1, 1)"
+    }
+    else if (item.getCompletedStatus === "Completed") {
+        completedStatusText.style.color = "rgb(0, 132, 0)"
+    }
+
 
     const descLabel = createUIItem(`detailsWindowText`, "div", [], textContainer)
     editText(descLabel, `Description: `)
@@ -299,6 +335,7 @@ function seeDetails(item) {
 
 function editTask(e, item) {
     addTaskWindow()
+
     const itemIndex = getId(e.target.parentElement.parentElement).split("-")[3]
     const projectIndex = getId(e.target.parentElement.parentElement).split("-")[1]
     const window = select(".window")
@@ -349,7 +386,12 @@ function editTask(e, item) {
                 inboxList.splice(itemIndex, 1)
             }
             else if (["Today", "Week"].includes(currentPage)) {
-                findProjectThroughProjectName(item.originProject).getItems.splice(itemIndex, 1)
+                if (item.originProject === "Inbox") {
+                    inboxList.splice(itemIndex, 1)
+                }
+                else {
+                    findProjectThroughProjectName(item.originProject).getItems.splice(itemIndex, 1)
+                }
             }
             else {
                 projectList[projectIndex].getItems.splice(itemIndex, 1)
@@ -532,7 +574,7 @@ function addTaskWindow() {
 function addProjectAddButtonFunctionality() {
     const sideBar = select("#sideBar")
 
-    const inputContainer = createUIItem("projectNavChild", "div", ["button"], sideBar)
+    const inputContainer = createUIItem("projectNavChild", "div", [], sideBar)
     addId(inputContainer, "projectNavInputContainer")
 
     const nameInput = createUIItem("nameInput", "input", [], inputContainer)
@@ -551,20 +593,17 @@ function addProjectAddButtonFunctionality() {
 
         if (nameInput.value.length > 15) {
             alert("Project Name can not be over 15 characters.")
-            nameInput.value = ""
             return
         }
 
-        if (["Index", "Today", "Week", "Projects"].includes(nameInput.value)) {
+        if (["Inbox", "Today", "Week", "Projects"].includes(nameInput.value)) {
             alert("Project Name can not be a default.")
-            nameInput.value = ""
             return
         }
 
         for (let i = 0; i < projectList.length; i++) {
             if (projectList[i].getTitle === nameInput.value) {
                 alert("Project Name already exists!")
-                nameInput.value = ""
                 return
             }
         }
@@ -630,4 +669,70 @@ function createUIItem(stringTitle, typeOfElement, arrayOfExtraClasses, appending
 
     return item
 }
+
+function editProject(e, item) {
+    addTaskWindow()
+    const window = select(".window")
+    const titleText = select(".titleText")
+    const inputTaskName = select(".inputTaskName")
+    const inputTaskLabel = select(".inputTaskLabel")
+    const originalAddButton = select(".addButton")
+    const buttonContainer = select(".buttonContainer")
+
+    editText(titleText, "Edit Project Name")
+    editText(inputTaskLabel, "Project Name: ")
+    inputTaskName.placeholder = "Project Name"
+    inputTaskName.value = item.getTitle
+    select(".exitButton").remove()
+
+    removeClass(window, "addTaskWindow")
+    addClass(window, "editProjectNameWindow")
+
+    const parentsToRemove = [".inputDescLabel", ".inputDueDateLabel", ".inputPriorityLabel", ".inputCategoryLabel"]
+    for (let i = 0; i < parentsToRemove.length; i++) {
+    select(parentsToRemove[i]).parentElement.remove()
+    }
+
+    originalAddButton.remove()
+
+    const editButton = createUIItem(`editButton`, "div", ["button"], "")
+    editText(editButton, "Edit Name")
+    insert(buttonContainer, editButton, 0)
+
+    editButton.addEventListener("click", () => {
+        const newName = inputTaskName.value
+
+        if (newName === item.getTitle) {
+            window.remove()
+            updateMainScreen()
+            return
+        }
     
+        if (newName.length > 15) {
+            alert("Project Name can not be over 15 characters.")
+            return
+        }
+
+        if (newName.length === 0) {
+            alert("Project Name can not be empty.")
+            return
+        }
+
+        if (["Inbox", "Today", "Week", "Projects"].includes(newName)) {
+            alert("Project Name can not be a default.")
+            return
+        }
+
+        for (let i = 0; i < projectList.length; i++) {
+            if (projectList[i].getTitle === newName) {
+                alert("Project Name already exists!")
+                return
+            }
+        }
+
+        item.changeTitle = newName
+        window.remove()
+        updateMainScreen()
+    })
+
+}

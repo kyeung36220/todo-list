@@ -90,6 +90,10 @@ class Project {
         return this.index
     }
 
+    set changeTitle(newTitle) {
+        this.title = newTitle
+    }
+
     addItem(title, description, dueDate, priority, completedStatus, listIndex) {
         let originProject = this.title
         let item = new Item(title, description, dueDate, priority, completedStatus, getProjectItemListLength(listIndex), originProject)
@@ -197,14 +201,18 @@ function addInitialTasks() {
 
         return
     }
+    addItemToInbox("Laundry", "fold clothes", "2025-01-15", "Low", "Not Completed")
+    addItemToInbox("Cook", "Lasagna", "2025-01-15", "Medium", "Not Completed")
+    
     addProjectToProjectList("Homework")
-    projectList[0].addItem("Math", "Chapter 3 Module 4", "2025-01-12", "High", "Not Completed", 0)
-    projectList[0].addItem("English", "1984 Chapter 13", "2024-04-15", "High", "Not Completed", 0)
+    projectList[0].addItem("Math", "Chapter 3 Module 4", "2025-01-12", "High", "Completed", 0)
+    projectList[0].addItem("English", "1984 Chapter 13", "2025-01-13", "High", "Completed", 0)
+
     addProjectToProjectList("Tests")
-    projectList[1].addItem("Science Test", "Cell Anatomy", "2024-09-16", "High", "Not Completed", 1)
-    projectList[1].addItem("Statistics Final", "Chapter 1 - 10", "2024-05-30", "High", "Not Completed", 1)
-    addItemToInbox("Laundry", "fold clothes", "2023-06-17", "Low", "Not Completed")
-    addItemToInbox("Cook", "Lasagna", "2023-05-03", "Medium", "Completed")
+    projectList[1].addItem("Science Test", "Cell Anatomy", "2025-02-02", "High", "Not Completed", 1)
+    projectList[1].addItem("Statistics Final", "Chapter 1 - 10", "2025-01-15", "High", "Not Completed", 1)
+
+
 }
 
 export function updateLocalStorage() {
