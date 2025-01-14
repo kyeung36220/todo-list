@@ -1,15 +1,18 @@
 import { select, create, editText, addClass, append, capitalize, insert, addId, editValue, getId, removeClass } from "./domFunctions"
 import { inboxList, todayTasksList, weekTasksList, projectList, addItemToInbox, addProjectToProjectList, updateTodayAndWeekLists, updateLocalStorage } from "./index.js"
 import checkedSvg from "./assets/checked.svg"
+import checkmarkSvg from "./assets/checkmark.svg"
 import detailsSvg from "./assets/details.svg"
 import editSvg from "./assets/edit.svg"
+import exitButtonSvg from "./assets/x.svg"
 import menuImageSvg from "./assets/menu.svg"
 import plusOnlySvg from "./assets/plusOnly.svg"
 import plusWithCircleSvg from "./assets/plusWithCircle.svg"
+import sortAscPng from "./assets/sortAsc.png"
+import sortDescPng from "./assets/sortDesc.png"
 import trashSvg from "./assets/trash.svg"
 import uncheckedSvg from "./assets/unchecked.svg"
-import exitButtonSvg from "./assets/x.svg"
-import checkmarkSvg from "./assets/checkmark.svg"
+
 
 let currentPage = "Inbox"
 
@@ -43,6 +46,7 @@ export function initialize() {
 
     })
 
+    addSort()
     addSideBar()
 }
 
@@ -735,4 +739,41 @@ function editProject(e, item) {
         updateMainScreen()
     })
 
+}
+
+function addSort() {
+    const body = document.querySelector("body")
+
+    const sortContainer = createUIItem("sortContainer", "div", [], body)
+
+    const sortLabel = createUIItem("sortLabel", "div", [], sortContainer)
+    editText(sortLabel, "Sort By:")
+
+    const sortDropdown = createUIItem("sortDropdown", "select", [], sortContainer)
+
+    const sortPlaceholder = createUIItem("sortOption", "option", ["placeholder"], sortDropdown)
+    sortPlaceholder.textContent = "Select"
+    sortPlaceholder.disabled = true
+    sortPlaceholder.selected = true
+    sortPlaceholder.hidden = true
+
+    const sortOptions = ["Name", "dueDate", "Priority"]
+    for (let i = 0; i < sortOptions.length; i++) {
+        const option = createUIItem("sortOption", "option", [sortOptions[i]], sortDropdown)
+        option.textContent = sortOptions[i]
+    }
+    select(".dueDate").textContent = "Due Date"
+
+    const sortIcon = createUIItem("sortIcon", "img", [], sortContainer)
+    sortIcon.src = sortDescPng
+
+    sortIcon.addEventListener("click", () => {
+        sortIcon.src = sortIcon.src === sortDescPng ? sortAscPng : sortDescPng
+    })
+
+    sortDropdown.addEventListener("change", () => {
+        let tempList = []
+        const direction = sortIcon.src = "sortDescPng" ? "desc" : "asc"
+
+    })
 }

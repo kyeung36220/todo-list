@@ -63,12 +63,6 @@ h1, h2, h3, h4, h5, h6 {
   --font-color: #FCDEC0;
 }
 
-[data-theme="dark"] {
-  --primary-color: #B4846C;
-  --secondary-color: #7D5A50;
-  --font-color: #FCDEC0;
-}
-
 body {
     font-family: "Fredoka";
     height: clamp(474px, 100vh, 100vh);
@@ -348,6 +342,34 @@ body {
 .addTaskButton:hover {
   cursor: pointer;
   filter: brightness(0) saturate(100%) invert(96%) sepia(65%) saturate(669%) hue-rotate(303deg) brightness(101%) contrast(98%);
+}
+
+.sortContainer {
+  display: flex;
+  position: absolute;
+  top: 17vh;
+  right: 5vw;
+  z-index: 3;
+  font-size: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.sortDropdown {
+  text-align: center;
+}
+
+.sortLabel {
+  margin-right: 7px;
+}
+
+.sortIcon {
+  height: 30px;
+}
+
+.sortIcon:hover {
+  cursor: pointer;
+  filter: brightness(0) saturate(100%) invert(38%) sepia(8%) saturate(1811%) hue-rotate(326deg) brightness(92%) contrast(83%);
 }
 
 /* WINDOW STUFF */
